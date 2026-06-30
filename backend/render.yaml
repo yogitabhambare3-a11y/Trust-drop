@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: trustdrop-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/trustdrop.db
+      - key: CORS_ORIGIN
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+    disk:
+      name: trustdrop-data
+      mountPath: /var/data
+      sizeGB: 1
