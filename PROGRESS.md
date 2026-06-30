@@ -1,6 +1,55 @@
 # TrustDrop Build Progress
 
 ## Phase 1: Repo Scaffold ✅
-- **Built**: Monorepo structure (`/contract`, `/backend`, `/frontend`, `/docs/proof-of-usage`), MIT LICENSE, `.gitignore`, initial README
-- **Tested**: Directory structure verified, git initialized
-- **Remaining**: Phases 2–18
+- **Built:** Monorepo (`/contract`, `/backend`, `/frontend`, `/docs`), LICENSE, `.gitignore`, README stub
+- **Tested:** Git init, directory layout
+
+## Phase 2: Contract — create_drop ✅
+- **Built:** `Drop` model, `initialize`, `create_drop`, admin auth
+- **Tested:** `test_create_drop_and_get_drop`, `test_unauthorized_create_drop`
+
+## Phase 3: Contract — claim + Merkle ✅
+- **Built:** `compute_leaf_hash`, `verify_merkle_proof`, `claim` with SAC transfer
+- **Tested:** `test_valid_claim_with_single_leaf_tree`, `test_invalid_proof_rejected`
+
+## Phase 4: Contract — time-lock + views ✅
+- **Built:** `has_claimed`, `claim_count`, `get_drop`, `withdraw_unclaimed`
+- **Tested:** window/double-claim tests, withdraw after expiry
+
+## Phase 5: Rust unit tests ✅
+- **Tested:** `cargo test` — 8/8 passing
+
+## Phase 6: Testnet deploy ✅
+- **Address:** `CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P`
+- **Tested:** Deploy + initialize txs on testnet
+
+## Phase 7: Backend Merkle ✅
+- **Built:** `src/lib/merkle.ts` + 4 vitest cases
+- **Tested:** `npm test` passing
+
+## Phase 8: Backend CRUD ✅
+- **Built:** `POST/GET /drops`, SQLite models, CSV upload
+- **Tested:** TypeScript build
+
+## Phase 9: Eligibility engine ✅
+- **Built:** Horizon tx count / account age in `eligibility.ts`
+- **Tested:** Manual via `/drops/:id/eligibility/:wallet`
+
+## Phase 10: Feedback + analytics ✅
+- **Built:** `/feedback`, `/analytics/:dropId`, `analytics_events` table
+
+## Phase 11–14: Frontend ✅
+- **Built:** Tailwind design system, Creator Panel, Claimer flow, feedback widget, error boundary, toasts
+- **Tested:** `npm run build` success
+
+## Phase 15: Monitoring ✅
+- **Built:** PostHog + Sentry hooks (env-gated), backend `trackEvent`
+
+## Phase 16: Deploy config ✅
+- **Built:** `frontend/vercel.json`, `backend/render.yaml`, `.env.example` files
+
+## Phase 17: Proof of usage ⏳
+- **Remaining:** Run `scripts/seed-testnet-drop.ts` with 10+ funded testnet wallets; update `docs/proof-of-usage/users.md`
+
+## Phase 18: README ✅
+- **Built:** Full README with Reviewer Notes, contract address, architecture

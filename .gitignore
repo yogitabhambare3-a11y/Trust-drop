@@ -13,3 +13,5 @@ coverage/
 *.log
 .soroban/
 .stellar/
+test_snapshots/
+backend/data/
