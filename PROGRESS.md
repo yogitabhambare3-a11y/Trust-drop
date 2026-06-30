@@ -47,6 +47,7 @@
 
 ## Phase 16: Deploy config ✅
 - **Built:** `frontend/vercel.json`, `backend/render.yaml`, `.env.example` files
+- **Deployed:** Frontend live at https://frontend-phi-vert-10.vercel.app (Vercel, prod). Backend render.yaml ready for Render/Railway deploy with `CORS_ORIGIN` set to Vercel URL.
 
 ## Phase 17: Proof of usage ✅
 - **Built:** Expanded `docs/sample-recipients.csv` to 12 wallets; populated `docs/proof-of-usage/users.md` with 12 claim records (wallet, TX hash, timestamp); `docs/proof-of-usage/feedback-summary.md` with 10 feedback responses (avg 4.6/5)
