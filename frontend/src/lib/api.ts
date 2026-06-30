@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
+// When VITE_API_URL is not set, use /api (Vercel API routes on the same domain)
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export interface DropStats {
   totalRecipients: number;
