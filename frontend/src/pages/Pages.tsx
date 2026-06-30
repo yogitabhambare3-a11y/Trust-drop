@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { signTransaction } from "@stellar/freighter-api";
+import { Networks } from "@stellar/stellar-sdk";
 import { useWallet } from "../context/WalletContext";
-import { checkEligibility, getDrop, getRecipients, type Drop } from "../lib/api";
+import { checkEligibility, createDrop, getDrop, getRecipients, recordClaim, type Drop } from "../lib/api";
 import { FeedbackWidget } from "../components/FeedbackWidget";
 import { useToast } from "../components/Toast";
+import { invokeClaim, humanizeContractError } from "../lib/stellar";
 import posthog from "posthog-js";
 
 type ClaimState = "idle" | "checking" | "submitting" | "pending" | "confirmed" | "failed";
@@ -68,7 +71,6 @@ export function CreatorPanel() {
       }
       if (csvFile) fd.append("csv", csvFile);
 
-      const { createDrop } = await import("../lib/api");
       const result = await createDrop(fd);
       setDropId(result.dropId);
       posthog.capture("drop_created", { dropId: result.dropId, recipients: result.recipientCount });
@@ -250,11 +252,6 @@ export function ClaimerPage() {
     posthog.capture("claim_attempt", { dropId });
 
     try {
-      const { signTransaction } = await import("@stellar/freighter-api");
-      const { invokeClaim, humanizeContractError } = await import("../lib/stellar");
-      const { recordClaim } = await import("../lib/api");
-      const { Networks } = await import("@stellar/stellar-sdk");
-
       setClaimState("pending");
       const hash = await invokeClaim({
         sourcePublicKey: publicKey,
@@ -277,7 +274,7 @@ export function ClaimerPage() {
       posthog.capture("claim_success", { dropId, txHash: hash });
       toast("Claim confirmed on-chain!", "success");
     } catch (e) {
-      const msg = (await import("../lib/stellar")).humanizeContractError(e);
+      const msg = humanizeContractError(e);
       setErrorMsg(msg);
       setClaimState("failed");
       posthog.capture("claim_failed", { dropId, error: msg });

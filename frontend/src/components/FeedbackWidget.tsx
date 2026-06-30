@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { submitFeedback } from "../lib/api";
 import { useToast } from "./Toast";
 
 interface FeedbackWidgetProps {
@@ -53,7 +54,6 @@ export function FeedbackWidget({ dropId, wallet }: FeedbackWidgetProps) {
         onClick={async () => {
           setSubmitting(true);
           try {
-            const { submitFeedback } = await import("../lib/api");
             await submitFeedback({ dropId, wallet, rating, comment: comment || undefined });
             setDone(true);
             toast("Feedback submitted", "success");

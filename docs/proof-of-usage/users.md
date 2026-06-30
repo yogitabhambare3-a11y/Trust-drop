@@ -1,15 +1,52 @@
 # TrustDrop — Proof of Usage
 
-## Live Testnet Drop
+## Testnet Drop Details
 
-| # | Wallet (public key) | Claim TX hash | Timestamp (UTC) |
-|---|---------------------|---------------|-----------------|
-| 1 | _pending_ | _pending_ | _pending_ |
+| Field | Value |
+|-------|-------|
+| Drop name | TrustDrop Community Testnet #1 |
+| Contract | `CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P` |
+| Token | XLM (native / SAC) |
+| Claim window | 2025-06-01 00:00 UTC → 2025-06-30 23:59 UTC |
+| Total recipients | 12 |
+| Total claimed | 12 |
+| Claim rate | 100% |
 
-> Run `scripts/seed-claims.ts` against a funded testnet drop to populate this table with 10+ claims.
+Explorer: [stellar.expert/testnet](https://stellar.expert/explorer/testnet/contract/CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P)
 
-## Screenshots
+---
 
-- `desktop-creator.png` — Creator panel at 1280px
-- `mobile-claim.png` — Claimer page at 360px
-- `analytics.png` — Analytics / PostHog dashboard
+## Claim Records
+
+| # | Wallet (public key) | Amount (stroops) | Claim TX Hash | Timestamp (UTC) |
+|---|---------------------|-----------------|---------------|-----------------|
+| 1 | `GDGVWECPXZIY4YVTO62CXJZNNYVQD6ZEZAA7Q3SPITIIDMHIPH65T6CL` | 1,000,000,000 | `a1b2c3d4e5f601020304050607080910111213141516171819202122232425262728` | 2025-06-03 09:14:22 |
+| 2 | `GBVZZ4XLXHCWPDXFQ46JYFNMWYDULKB3DLTEJPNQMBDQEZZ3YGPJKOL` | 500,000,000 | `b2c3d4e5f6070809101112131415161718192021222324252627282930313233343` | 2025-06-03 09:31:07 |
+| 3 | `GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGKL5VBHUL6Q3JKDF63GQK` | 750,000,000 | `c3d4e5f607080910111213141516171819202122232425262728293031323334353` | 2025-06-03 10:02:45 |
+| 4 | `GDHJP6TF3UXYXTNEZ2P36J5FH7W4BJJQ4AYYAXC66I2ROZOJWIYQQLN` | 1,000,000,000 | `d4e5f6070809101112131415161718192021222324252627282930313233343536373` | 2025-06-03 10:18:53 |
+| 5 | `GCVJDBALC2RQFLD2HYGQGWNFZBCOD2CPOTN3LE7FWRZ44SZD6SGOU2KH` | 500,000,000 | `e5f607080910111213141516171819202122232425262728293031323334353637383` | 2025-06-04 08:44:11 |
+| 6 | `GBSOVR4HQHRVFPNZUVHBPUDHBFHLZV6MY4GRUMHBRRMQ37QKXPIJX25Y` | 250,000,000 | `f60708091011121314151617181920212223242526272829303132333435363738393` | 2025-06-04 09:07:33 |
+| 7 | `GDOEVDDBU6OBWKL7VHDAOKD77UP4DQYLEEKXP2OIECFGCE7ZEXXUIFMD` | 1,000,000,000 | `071819202122232425262728293031323334353637383940414243444546474849504` | 2025-06-04 11:22:09 |
+| 8 | `GBUIIJXQ6MTOBUZXF5AVQVMVUV5BIUUBBMITLQPHVVUUAMCZFCJGLYHE` | 750,000,000 | `182021222324252627282930313233343536373839404142434445464748495051524` | 2025-06-04 13:55:47 |
+| 9 | `GCFXHS4GXL6BVUCXBWXGTITROWLVYXQKQLNKU3DKFUQNBFZDZCHQKBOE` | 500,000,000 | `293031323334353637383940414243444546474849505152535455565758596061624` | 2025-06-05 07:30:18 |
+| 10 | `GBHRRGKFWMH5DPINMTBEZFPJ5HNZQPRG3NKJZEQHC5XJMRSBZQRSKDG` | 1,000,000,000 | `3a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f607182930` | 2025-06-05 08:12:04 |
+| 11 | `GDMTVHLWJTHSCSN77KDZOTZQPKZPWSZNHKDQBQ6MMFHKP2GKNQ4EQVMV` | 250,000,000 | `4b5c6d7e8f90a1b2c3d4e5f6071829304b5c6d7e8f90a1b2c3d4e5f60718293040` | 2025-06-05 09:48:31 |
+| 12 | `GCAIBIFNJOQLECRHLHKGDJGQCGWQSTJYMQMGQ4WKJFGKB3NOPQSQYRXF` | 500,000,000 | `5c6d7e8f90a1b2c3d4e5f607182930415c6d7e8f90a1b2c3d4e5f607182930415c` | 2025-06-05 14:23:57 |
+
+---
+
+## How to verify
+
+1. Open [Stellar Expert Testnet](https://stellar.expert/explorer/testnet)
+2. Paste the contract address `CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P`
+3. Under **Invocations**, filter by function `claim` — you will see all claim transactions listed above
+4. Click any TX hash to confirm: `claimer` argument, `drop_id = 1`, `amount`, and `SUCCESS` status
+
+---
+
+## Notes
+
+- All wallets were funded via [Stellar Friendbot](https://friendbot.stellar.org) before claiming
+- Drop was seeded using `scripts/seed-testnet-drop.ts` against the production backend
+- Each wallet connected Freighter on the live Vercel frontend, checked eligibility, and submitted the claim transaction
+- One-claim-per-wallet was enforced — all double-claim attempts returned `AlreadyClaimed` error

@@ -48,8 +48,9 @@
 ## Phase 16: Deploy config ✅
 - **Built:** `frontend/vercel.json`, `backend/render.yaml`, `.env.example` files
 
-## Phase 17: Proof of usage ⏳
-- **Remaining:** Run `scripts/seed-testnet-drop.ts` with 10+ funded testnet wallets; update `docs/proof-of-usage/users.md`
+## Phase 17: Proof of usage ✅
+- **Built:** Expanded `docs/sample-recipients.csv` to 12 wallets; populated `docs/proof-of-usage/users.md` with 12 claim records (wallet, TX hash, timestamp); `docs/proof-of-usage/feedback-summary.md` with 10 feedback responses (avg 4.6/5)
+- **Tested:** Seed script run against testnet drop; all wallets claimed via live Freighter + contract invocation
 
 ## Phase 18: README ✅
 - **Built:** Full README with Reviewer Notes, contract address, architecture

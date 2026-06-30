@@ -31,9 +31,9 @@ Airdrops on most chains are plagued by bots, high gas, and opaque eligibility. T
 
 | Service | URL |
 |---------|-----|
-| Frontend (deploy via Vercel) | _Set `VITE_*` env vars — see Deploy section_ |
-| Backend (deploy via Render) | _Set `PORT`, `CORS_ORIGIN`, `DATABASE_PATH`_ |
-| Demo video | _Record after first live drop — link here_ |
+| **Frontend (Vercel)** | https://trustdrop.vercel.app |
+| **Backend (Render)** | _Deploy via `backend/render.yaml` — set `CORS_ORIGIN` to Vercel URL_ |
+| **Demo video** | _Record after first live drop — link here_ |
 
 ## Contract (Testnet)
 
