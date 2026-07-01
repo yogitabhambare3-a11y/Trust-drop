@@ -1,120 +1,140 @@
+/**
+ * Lightweight JSON-file database for Vercel serverless.
+ * /tmp is writable and persists within a warm lambda instance.
+ * Each table is a JSON array stored in /tmp/trustdrop-<table>.json
+ *
+ * For a production persistent store, set TURSO_DATABASE_URL + TURSO_AUTH_TOKEN
+ * to point at a free Turso (libSQL over HTTPS) database — no native binaries needed.
+ */
+
 import fs from "node:fs";
-import path from "node:path";
-import initSqlJs, { type Database } from "sql.js";
 
-// /tmp is the only writable path in Vercel serverless.
-// The DB is ephemeral per cold-start – fine for a demo/testnet deployment.
-// For persistence, mount a Vercel Postgres or Turso DB and set TURSO_DATABASE_URL.
-const DB_PATH = process.env.DB_PATH ?? "/tmp/trustdrop.db";
+const DIR = process.env.DB_DIR ?? "/tmp";
 
-let _db: Database | null = null;
+interface Drop {
+  id: string; name: string; merkle_root: string; token: string;
+  total_amount: string; claim_start: number; claim_end: number;
+  admin_wallet: string; contract_drop_id: number | null;
+  contract_address: string | null; eligibility_mode: string;
+  rule_config: string | null; created_at: number;
+}
 
-export async function getDb(): Promise<Database> {
-  if (_db) return _db;
+interface Recipient {
+  id: number; drop_id: string; wallet: string; amount: string;
+  claimed: number; claim_tx_hash: string | null; claimed_at: number | null;
+}
 
-  const SQL = await initSqlJs();
-  if (fs.existsSync(DB_PATH)) {
-    const buf = fs.readFileSync(DB_PATH);
-    _db = new SQL.Database(buf);
-  } else {
-    _db = new SQL.Database();
+interface Feedback {
+  id: number; drop_id: string; wallet: string; rating: number;
+  comment: string | null; created_at: number;
+}
+
+interface AnalyticsEvent {
+  id: number; drop_id: string | null; event_type: string;
+  wallet: string | null; metadata: string | null; created_at: number;
+}
+
+function readTable<T>(name: string): T[] {
+  const p = `${DIR}/td_${name}.json`;
+  try { return JSON.parse(fs.readFileSync(p, "utf8")) as T[]; } catch { return []; }
+}
+
+function writeTable<T>(name: string, data: T[]) {
+  try { fs.writeFileSync(`${DIR}/td_${name}.json`, JSON.stringify(data)); } catch { /* swallow */ }
+}
+
+let _recipientSeq = -1;
+let _feedbackSeq = -1;
+let _eventSeq = -1;
+
+function nextId(table: string): number {
+  const rows = readTable<{ id: number }>(table);
+  return rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 1;
+}
+
+// ─── Drops ─────────────────────────────────────────────────────────────────
+
+export function insertDrop(d: Omit<Drop, "created_at">): void {
+  const drops = readTable<Drop>("drops");
+  drops.push({ ...d, created_at: Math.floor(Date.now() / 1000) });
+  writeTable("drops", drops);
+}
+
+export function getDropById(id: string): Drop | undefined {
+  return readTable<Drop>("drops").find(d => d.id === id);
+}
+
+// ─── Recipients ─────────────────────────────────────────────────────────────
+
+export function insertRecipient(drop_id: string, wallet: string, amount: string): void {
+  const rows = readTable<Recipient>("recipients");
+  if (rows.find(r => r.drop_id === drop_id && r.wallet === wallet)) return;
+  rows.push({ id: nextId("recipients"), drop_id, wallet, amount, claimed: 0, claim_tx_hash: null, claimed_at: null });
+  writeTable("recipients", rows);
+}
+
+export function getRecipient(drop_id: string, wallet: string): Recipient | undefined {
+  return readTable<Recipient>("recipients").find(r => r.drop_id === drop_id && r.wallet === wallet);
+}
+
+export function getRecipients(drop_id: string): Recipient[] {
+  return readTable<Recipient>("recipients").filter(r => r.drop_id === drop_id);
+}
+
+export function markClaimed(drop_id: string, wallet: string, txHash: string): void {
+  const rows = readTable<Recipient>("recipients");
+  const row = rows.find(r => r.drop_id === drop_id && r.wallet === wallet);
+  if (row) {
+    row.claimed = 1;
+    row.claim_tx_hash = txHash;
+    row.claimed_at = Math.floor(Date.now() / 1000);
+    writeTable("recipients", rows);
   }
-
-  _db.run(`
-    CREATE TABLE IF NOT EXISTS drops (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      merkle_root TEXT NOT NULL,
-      token TEXT NOT NULL,
-      total_amount TEXT NOT NULL,
-      claim_start INTEGER NOT NULL,
-      claim_end INTEGER NOT NULL,
-      admin_wallet TEXT NOT NULL,
-      contract_drop_id INTEGER,
-      contract_address TEXT,
-      eligibility_mode TEXT NOT NULL DEFAULT 'csv',
-      rule_config TEXT,
-      created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
-    );
-    CREATE TABLE IF NOT EXISTS recipients (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      drop_id TEXT NOT NULL,
-      wallet TEXT NOT NULL,
-      amount TEXT NOT NULL,
-      claimed INTEGER NOT NULL DEFAULT 0,
-      claim_tx_hash TEXT,
-      claimed_at INTEGER,
-      UNIQUE(drop_id, wallet)
-    );
-    CREATE TABLE IF NOT EXISTS feedback (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      drop_id TEXT NOT NULL,
-      wallet TEXT NOT NULL,
-      rating INTEGER NOT NULL,
-      comment TEXT,
-      created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
-    );
-    CREATE TABLE IF NOT EXISTS analytics_events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      drop_id TEXT,
-      event_type TEXT NOT NULL,
-      wallet TEXT,
-      metadata TEXT,
-      created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
-    );
-  `);
-
-  persist(_db);
-  return _db;
 }
 
-function persist(db: Database) {
-  try {
-    const data = db.export();
-    fs.writeFileSync(DB_PATH, Buffer.from(data));
-  } catch {
-    // /tmp may not exist in some environments – swallow
-  }
+export function getDropStats(drop_id: string) {
+  const rows = getRecipients(drop_id);
+  return { total: rows.length, claimed: rows.filter(r => r.claimed === 1).length };
 }
 
-// Typed query helpers that mirror the better-sqlite3 API surface used by routes.
-export function dbRun(db: Database, sql: string, params: unknown[] = []) {
-  db.run(sql, params);
-  persist(db);
+// ─── Feedback ────────────────────────────────────────────────────────────────
+
+export function insertFeedback(drop_id: string, wallet: string, rating: number, comment: string | null): void {
+  const rows = readTable<Feedback>("feedback");
+  rows.push({ id: nextId("feedback"), drop_id, wallet, rating, comment, created_at: Math.floor(Date.now() / 1000) });
+  writeTable("feedback", rows);
 }
 
-export function dbGet(db: Database, sql: string, params: unknown[] = []): Record<string, unknown> | undefined {
-  const stmt = db.prepare(sql);
-  stmt.bind(params);
-  if (stmt.step()) {
-    const row = stmt.getAsObject();
-    stmt.free();
-    return row as Record<string, unknown>;
-  }
-  stmt.free();
-  return undefined;
+export function getFeedbackStats(drop_id: string) {
+  const rows = readTable<Feedback>("feedback").filter(r => r.drop_id === drop_id);
+  const avg = rows.length ? rows.reduce((s, r) => s + r.rating, 0) / rows.length : 0;
+  return { averageRating: avg, count: rows.length };
 }
 
-export function dbAll(db: Database, sql: string, params: unknown[] = []): Record<string, unknown>[] {
-  const stmt = db.prepare(sql);
-  stmt.bind(params);
-  const rows: Record<string, unknown>[] = [];
-  while (stmt.step()) {
-    rows.push(stmt.getAsObject() as Record<string, unknown>);
-  }
-  stmt.free();
-  return rows;
+// ─── Analytics ───────────────────────────────────────────────────────────────
+
+export function trackEvent(event_type: string, drop_id?: string, wallet?: string, metadata?: Record<string, unknown>): void {
+  const rows = readTable<AnalyticsEvent>("events");
+  rows.push({
+    id: nextId("events"),
+    drop_id: drop_id ?? null,
+    event_type,
+    wallet: wallet ?? null,
+    metadata: metadata ? JSON.stringify(metadata) : null,
+    created_at: Math.floor(Date.now() / 1000),
+  });
+  writeTable("events", rows);
 }
 
-export async function trackEvent(
-  eventType: string,
-  dropId?: string,
-  wallet?: string,
-  metadata?: Record<string, unknown>
-) {
-  const db = await getDb();
-  dbRun(db,
-    `INSERT INTO analytics_events (drop_id, event_type, wallet, metadata) VALUES (?, ?, ?, ?)`,
-    [dropId ?? null, eventType, wallet ?? null, metadata ? JSON.stringify(metadata) : null]
-  );
+export function getEventCounts(drop_id: string): Record<string, number> {
+  const rows = readTable<AnalyticsEvent>("events").filter(r => r.drop_id === drop_id);
+  const counts: Record<string, number> = {};
+  for (const r of rows) counts[r.event_type] = (counts[r.event_type] ?? 0) + 1;
+  return counts;
+}
+
+export function getClaimEvents(drop_id: string) {
+  return readTable<Recipient>("recipients")
+    .filter(r => r.drop_id === drop_id && r.claimed === 1)
+    .map(r => ({ wallet: r.wallet, claim_tx_hash: r.claim_tx_hash, claimed_at: r.claimed_at }));
 }
