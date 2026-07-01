@@ -2,11 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": null,
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@5"
-    }
-  },
   "rewrites": [
     { "source": "/api/drops/:id/eligibility/:wallet", "destination": "/api/drops/[id]/eligibility/[wallet]" },
     { "source": "/api/drops/:id/recipients", "destination": "/api/drops/[id]/recipients" },
