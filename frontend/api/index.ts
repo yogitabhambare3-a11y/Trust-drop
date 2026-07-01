@@ -1,17 +1,7 @@
 /**
  * TrustDrop unified API handler.
- * All routes go through this single function so /tmp is shared within the same
- * warm lambda instance (solves cross-function /tmp isolation issue).
- *
- * Routes:
- *   GET  /api/health
- *   POST /api/drops
- *   GET  /api/drops/:id
- *   GET  /api/drops/:id/recipients
- *   GET  /api/drops/:id/eligibility/:wallet
- *   POST /api/drops/:id/claims
- *   POST /api/feedback
- *   GET  /api/analytics/:dropId
+ * Single function handles all routes — shares state within warm lambda instance.
+ * Uses Turso (persistent) when TURSO_DATABASE_URL is set, /tmp JSON otherwise.
  */
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
@@ -67,7 +57,8 @@ async function parseMultipart(req: VercelRequest): Promise<{ fields: Record<stri
 // ─── Route handlers ────────────────────────────────────────────────────────
 
 function health(_req: VercelRequest, res: VercelResponse) {
-  return res.json({ status: "ok", service: "trustdrop-api" });
+  const mode = process.env.TURSO_DATABASE_URL ? "turso (persistent)" : "tmp (ephemeral)";
+  return res.json({ status: "ok", service: "trustdrop-api", db: mode });
 }
 
 async function createDrop(req: VercelRequest, res: VercelResponse) {
@@ -91,10 +82,9 @@ async function createDrop(req: VercelRequest, res: VercelResponse) {
     contractDropId = fields.contractDropId ? Number(fields.contractDropId) : null;
     contractAddress = fields.contractAddress ?? null;
     ruleConfig = fields.ruleConfig ? JSON.parse(fields.ruleConfig) : null;
-    if (fields.recipients) {
+    if (fields.recipients)
       recipients = (JSON.parse(fields.recipients) as Array<{ wallet: string; amount: string }>)
         .map(r => ({ wallet: r.wallet, amount: BigInt(r.amount) }));
-    }
   } else {
     const b = req.body as Record<string, unknown>;
     name = b.name as string; token = (b.token as string) ?? "native";
@@ -122,34 +112,35 @@ async function createDrop(req: VercelRequest, res: VercelResponse) {
   const totalAmount = recipients.reduce((s, r) => s + r.amount, 0n).toString()
     || (ruleConfig?.defaultAmount as string | undefined) || "0";
 
-  insertDrop({ id: dropId, name, merkle_root: merkleRoot, token, total_amount: totalAmount,
+  await insertDrop({ id: dropId, name, merkle_root: merkleRoot, token, total_amount: totalAmount,
     claim_start: claimStart, claim_end: claimEnd, admin_wallet: adminWallet,
     contract_drop_id: contractDropId, contract_address: contractAddress,
     eligibility_mode: eligibilityMode, rule_config: ruleConfig ? JSON.stringify(ruleConfig) : null });
 
-  for (const r of recipients) insertRecipient(dropId, r.wallet, r.amount.toString());
-  trackEvent("drop_created", dropId, adminWallet, { recipientCount: recipients.length });
+  for (const r of recipients) await insertRecipient(dropId, r.wallet, r.amount.toString());
+  await trackEvent("drop_created", dropId, adminWallet, { recipientCount: recipients.length });
 
   return res.status(201).json({ dropId, merkleRoot, totalAmount, recipientCount: recipients.length, claimStart, claimEnd });
 }
 
-function getDrop(req: VercelRequest, res: VercelResponse, id: string) {
-  const drop = getDropById(id);
+async function getDrop(req: VercelRequest, res: VercelResponse, id: string) {
+  const drop = await getDropById(id);
   if (!drop) return res.status(404).json({ error: "Drop not found", code: "NOT_FOUND" });
-  const { total, claimed } = getDropStats(id);
+  const { total, claimed } = await getDropStats(id);
   let ruleConfig = null;
   if (drop.rule_config) { try { ruleConfig = JSON.parse(drop.rule_config); } catch { /* ignore */ } }
-  return res.json({ ...drop, ruleConfig, stats: { totalRecipients: total, claimedCount: claimed, claimRate: total ? claimed / total : 0 } });
+  return res.json({ ...drop, ruleConfig,
+    stats: { totalRecipients: total, claimedCount: claimed, claimRate: total ? claimed / total : 0 } });
 }
 
-function getDropRecipients(req: VercelRequest, res: VercelResponse, id: string) {
-  return res.json({ recipients: getRecipients(id) });
+async function getDropRecipients(req: VercelRequest, res: VercelResponse, id: string) {
+  return res.json({ recipients: await getRecipients(id) });
 }
 
 async function checkEligibility(req: VercelRequest, res: VercelResponse, id: string, wallet: string) {
-  const drop = getDropById(id);
+  const drop = await getDropById(id);
   if (!drop) return res.status(404).json({ error: "Drop not found", code: "NOT_FOUND" });
-  trackEvent("eligibility_check", id, wallet);
+  await trackEvent("eligibility_check", id, wallet);
 
   if (drop.eligibility_mode === "rules") {
     const rules = JSON.parse(drop.rule_config ?? "{}");
@@ -158,45 +149,50 @@ async function checkEligibility(req: VercelRequest, res: VercelResponse, id: str
     const tree = buildMerkleTree([{ wallet, amount: BigInt(result.amount!) }]);
     return res.json({ eligible: true, amount: result.amount,
       proof: getMerkleProof(tree.layers, tree.leaves.get(wallet)!.leaf),
-      merkleRoot: tree.root, contractDropId: drop.contract_drop_id, contractAddress: drop.contract_address });
+      merkleRoot: tree.root, contractDropId: drop.contract_drop_id,
+      contractAddress: drop.contract_address });
   }
 
-  const recipient = getRecipient(id, wallet);
+  const recipient = await getRecipient(id, wallet);
   if (!recipient) return res.json({ eligible: false, reason: "Wallet not in recipient list" });
-  const allRecipients = getRecipients(id).map(r => ({ wallet: r.wallet, amount: BigInt(r.amount) }));
+
+  const allRecipients = (await getRecipients(id)).map(r => ({ wallet: r.wallet, amount: BigInt(r.amount) }));
   const tree = buildMerkleTree(allRecipients);
   const leafEntry = tree.leaves.get(wallet);
   if (!leafEntry) return res.json({ eligible: false, reason: "Wallet not found in Merkle tree" });
 
-  return res.json({ eligible: true, amount: recipient.amount, alreadyClaimed: recipient.claimed === 1,
+  return res.json({ eligible: true, amount: recipient.amount,
+    alreadyClaimed: Number(recipient.claimed) === 1,
     proof: getMerkleProof(tree.layers, leafEntry.leaf),
     merkleRoot: drop.merkle_root, contractDropId: drop.contract_drop_id,
     contractAddress: drop.contract_address, claimStart: drop.claim_start,
     claimEnd: drop.claim_end, token: drop.token });
 }
 
-function recordClaim(req: VercelRequest, res: VercelResponse, id: string) {
+async function recordClaim(req: VercelRequest, res: VercelResponse, id: string) {
   const { wallet, txHash } = req.body as { wallet?: string; txHash?: string };
   if (!wallet || !txHash) return res.status(400).json({ error: "wallet and txHash required" });
-  markClaimed(id, wallet, txHash);
-  trackEvent("claim_success", id, wallet, { txHash });
+  await markClaimed(id, wallet, txHash);
+  await trackEvent("claim_success", id, wallet, { txHash });
   return res.json({ ok: true });
 }
 
-function submitFeedback(req: VercelRequest, res: VercelResponse) {
-  const { dropId, wallet, rating, comment } = req.body as { dropId?: string; wallet?: string; rating?: number; comment?: string };
+async function submitFeedback(req: VercelRequest, res: VercelResponse) {
+  const { dropId, wallet, rating, comment } = req.body as
+    { dropId?: string; wallet?: string; rating?: number; comment?: string };
   if (!dropId || !wallet || !rating) return res.status(400).json({ error: "dropId, wallet, rating required" });
   if (rating < 1 || rating > 5) return res.status(400).json({ error: "rating must be 1-5" });
-  insertFeedback(dropId, wallet, rating, comment ?? null);
-  trackEvent("feedback_submitted", dropId, wallet, { rating });
+  await insertFeedback(dropId, wallet, rating, comment ?? null);
+  await trackEvent("feedback_submitted", dropId, wallet, { rating });
   return res.status(201).json({ ok: true });
 }
 
-function getAnalytics(req: VercelRequest, res: VercelResponse, dropId: string) {
-  if (!getDropById(dropId)) return res.status(404).json({ error: "Drop not found" });
-  return res.json({ dropId, claims: getClaimEvents(dropId),
-    events: Object.entries(getEventCounts(dropId)).map(([event_type, count]) => ({ event_type, count })),
-    feedback: getFeedbackStats(dropId) });
+async function getAnalytics(req: VercelRequest, res: VercelResponse, dropId: string) {
+  if (!await getDropById(dropId)) return res.status(404).json({ error: "Drop not found" });
+  return res.json({ dropId,
+    claims: await getClaimEvents(dropId),
+    events: Object.entries(await getEventCounts(dropId)).map(([event_type, count]) => ({ event_type, count })),
+    feedback: await getFeedbackStats(dropId) });
 }
 
 // ─── Router ────────────────────────────────────────────────────────────────
@@ -207,39 +203,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // Strip /api prefix added by Vercel
   const url = (req.url ?? "").replace(/^\/api/, "").split("?")[0];
   const method = req.method ?? "GET";
 
   try {
-    // GET /health
     if (url === "/health" || url === "") return health(req, res);
-
-    // POST /drops
     if (url === "/drops" && method === "POST") return await createDrop(req, res);
 
-    // GET /drops/:id
-    const dropMatch = url.match(/^\/drops\/([^/]+)$/);
-    if (dropMatch && method === "GET") return getDrop(req, res, dropMatch[1]);
+    const dropOnly = url.match(/^\/drops\/([^/]+)$/);
+    if (dropOnly && method === "GET") return await getDrop(req, res, dropOnly[1]);
 
-    // GET /drops/:id/recipients
-    const recipientsMatch = url.match(/^\/drops\/([^/]+)\/recipients$/);
-    if (recipientsMatch && method === "GET") return getDropRecipients(req, res, recipientsMatch[1]);
+    const recipients = url.match(/^\/drops\/([^/]+)\/recipients$/);
+    if (recipients && method === "GET") return await getDropRecipients(req, res, recipients[1]);
 
-    // GET /drops/:id/eligibility/:wallet
-    const eligibilityMatch = url.match(/^\/drops\/([^/]+)\/eligibility\/([^/]+)$/);
-    if (eligibilityMatch && method === "GET") return await checkEligibility(req, res, eligibilityMatch[1], eligibilityMatch[2]);
+    const eligibility = url.match(/^\/drops\/([^/]+)\/eligibility\/([^/]+)$/);
+    if (eligibility && method === "GET") return await checkEligibility(req, res, eligibility[1], decodeURIComponent(eligibility[2]));
 
-    // POST /drops/:id/claims
-    const claimsMatch = url.match(/^\/drops\/([^/]+)\/claims$/);
-    if (claimsMatch && method === "POST") return recordClaim(req, res, claimsMatch[1]);
+    const claims = url.match(/^\/drops\/([^/]+)\/claims$/);
+    if (claims && method === "POST") return await recordClaim(req, res, claims[1]);
 
-    // POST /feedback
-    if (url === "/feedback" && method === "POST") return submitFeedback(req, res);
+    if (url === "/feedback" && method === "POST") return await submitFeedback(req, res);
 
-    // GET /analytics/:dropId
-    const analyticsMatch = url.match(/^\/analytics\/([^/]+)$/);
-    if (analyticsMatch && method === "GET") return getAnalytics(req, res, analyticsMatch[1]);
+    const analytics = url.match(/^\/analytics\/([^/]+)$/);
+    if (analytics && method === "GET") return await getAnalytics(req, res, analytics[1]);
 
     return res.status(404).json({ error: "Not found" });
   } catch (err) {
