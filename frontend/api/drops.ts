@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { getDb, dbRun, trackEvent } from "./_db.js";
 import { buildMerkleTree, parseCsvRecipients } from "./_merkle.js";
 
+// Cache buster: 2025-07-01-v3
+
 async function parseBody(req: VercelRequest): Promise<{ fields: Record<string, string>; csv?: string }> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
