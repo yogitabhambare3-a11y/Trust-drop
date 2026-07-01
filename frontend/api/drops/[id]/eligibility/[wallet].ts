@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { db, initDb, trackEvent } from "../../../_db.js";
+import { getDb, dbGet, dbAll, trackEvent } from "../../../_db.js";
 import { buildMerkleTree, getMerkleProof } from "../../../_merkle.js";
 import { evaluateRules } from "../../../_eligibility.js";
 
@@ -10,12 +10,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).end();
 
-  await initDb();
   const { id, wallet } = req.query as { id: string; wallet: string };
+  const db = await getDb();
 
-  const dropRow = await db.execute({ sql: `SELECT * FROM drops WHERE id = ?`, args: [id] });
-  if (dropRow.rows.length === 0) return res.status(404).json({ error: "Drop not found", code: "NOT_FOUND" });
-  const drop = dropRow.rows[0];
+  const drop = dbGet(db, `SELECT * FROM drops WHERE id = ?`, [id]);
+  if (!drop) return res.status(404).json({ error: "Drop not found", code: "NOT_FOUND" });
 
   await trackEvent("eligibility_check", id, wallet);
 
@@ -34,19 +33,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // CSV mode: look up recipient and rebuild proof from all recipients
-  const recipientRow = await db.execute({
-    sql: `SELECT * FROM recipients WHERE drop_id = ? AND wallet = ?`,
-    args: [id, wallet],
-  });
-  if (recipientRow.rows.length === 0) return res.json({ eligible: false, reason: "Wallet not in recipient list" });
-  const recipient = recipientRow.rows[0];
+  const recipient = dbGet(db, `SELECT * FROM recipients WHERE drop_id = ? AND wallet = ?`, [id, wallet]);
+  if (!recipient) return res.json({ eligible: false, reason: "Wallet not in recipient list" });
 
-  const allRows = await db.execute({
-    sql: `SELECT wallet, amount FROM recipients WHERE drop_id = ?`,
-    args: [id],
-  });
-  const allRecipients = allRows.rows.map((r) => ({ wallet: r.wallet as string, amount: BigInt(r.amount as string) }));
+  const allRows = dbAll(db, `SELECT wallet, amount FROM recipients WHERE drop_id = ?`, [id]);
+  const allRecipients = allRows.map((r) => ({ wallet: r.wallet as string, amount: BigInt(r.amount as string) }));
   const tree = buildMerkleTree(allRecipients);
   const leafEntry = tree.leaves.get(wallet);
   if (!leafEntry) return res.json({ eligible: false, reason: "Wallet not found in Merkle tree" });

@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { db, initDb } from "../_db.js";
+import { getDb, dbGet, dbAll } from "../_db.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -8,30 +8,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).end();
 
-  await initDb();
   const { dropId } = req.query as { dropId: string };
+  const db = await getDb();
 
-  const dropRow = await db.execute({ sql: `SELECT id FROM drops WHERE id = ?`, args: [dropId] });
-  if (dropRow.rows.length === 0) return res.status(404).json({ error: "Drop not found" });
+  const drop = dbGet(db, `SELECT id FROM drops WHERE id = ?`, [dropId]);
+  if (!drop) return res.status(404).json({ error: "Drop not found" });
 
-  const claims = await db.execute({
-    sql: `SELECT wallet, claim_tx_hash, claimed_at FROM recipients WHERE drop_id = ? AND claimed = 1 ORDER BY claimed_at ASC`,
-    args: [dropId],
-  });
-  const events = await db.execute({
-    sql: `SELECT event_type, COUNT(*) as count FROM analytics_events WHERE drop_id = ? GROUP BY event_type`,
-    args: [dropId],
-  });
-  const feedbackRow = await db.execute({
-    sql: `SELECT AVG(rating) as avgRating, COUNT(*) as count FROM feedback WHERE drop_id = ?`,
-    args: [dropId],
-  });
-  const fb = feedbackRow.rows[0];
+  const claims = dbAll(db, `SELECT wallet, claim_tx_hash, claimed_at FROM recipients WHERE drop_id = ? AND claimed = 1 ORDER BY claimed_at ASC`, [dropId]);
+  const events = dbAll(db, `SELECT event_type, COUNT(*) as count FROM analytics_events WHERE drop_id = ? GROUP BY event_type`, [dropId]);
+  const feedbackRow = dbGet(db, `SELECT AVG(rating) as avgRating, COUNT(*) as count FROM feedback WHERE drop_id = ?`, [dropId]);
 
   return res.json({
     dropId,
-    claims: claims.rows,
-    events: events.rows,
-    feedback: { averageRating: fb.avgRating ?? 0, count: fb.count },
+    claims,
+    events,
+    feedback: { averageRating: feedbackRow?.avgRating ?? 0, count: feedbackRow?.count ?? 0 },
   });
 }
