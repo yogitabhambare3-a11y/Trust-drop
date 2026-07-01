@@ -1,13 +1,12 @@
-import sha3 from "js-sha3";
-const { keccak256 } = sha3;
+import { keccak_256 } from "@noble/hashes/sha3";
 
 export interface Recipient {
   wallet: string;
   amount: bigint;
 }
 
-function amountToI128Be(amount: bigint): Buffer {
-  const buf = Buffer.alloc(16);
+function amountToI128Be(amount: bigint): Uint8Array {
+  const buf = new Uint8Array(16);
   let v = amount;
   for (let i = 15; i >= 0; i--) {
     buf[i] = Number(v & 0xffn);
@@ -16,14 +15,25 @@ function amountToI128Be(amount: bigint): Buffer {
   return buf;
 }
 
+function keccak256(data: Uint8Array): Buffer {
+  return Buffer.from(keccak_256(data));
+}
+
 export function hashLeaf(wallet: string, amount: bigint): Buffer {
-  const data = Buffer.concat([Buffer.from(wallet, "utf8"), amountToI128Be(amount)]);
-  return Buffer.from(keccak256.arrayBuffer(data));
+  const walletBytes = Buffer.from(wallet, "utf8");
+  const amountBytes = amountToI128Be(amount);
+  const data = new Uint8Array(walletBytes.length + amountBytes.length);
+  data.set(walletBytes, 0);
+  data.set(amountBytes, walletBytes.length);
+  return keccak256(data);
 }
 
 export function pairHash(a: Buffer, b: Buffer): Buffer {
   const [left, right] = Buffer.compare(a, b) <= 0 ? [a, b] : [b, a];
-  return Buffer.from(keccak256.arrayBuffer(Buffer.concat([left, right])));
+  const data = new Uint8Array(left.length + right.length);
+  data.set(left, 0);
+  data.set(right, left.length);
+  return keccak256(data);
 }
 
 export interface MerkleTreeResult {
