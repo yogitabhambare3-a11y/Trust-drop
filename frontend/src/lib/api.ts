@@ -1,4 +1,5 @@
 // When VITE_API_URL is not set, use /api (Vercel API routes on the same domain)
+// v2 – serverless API routes enabled
 const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export interface DropStats {
