@@ -27,7 +27,7 @@
 | # | Name | Wallet Address | TX Hash | Date | Verified |
 |---|------|----------------|---------|------|----------|
 | 1 | Yogita Bhambare | `GDTFEGG6CM4OPTVM4MTKDMY3JFBYQS6AQRMM5DVN36AYAYJXELMZYA5B` | `186332ad195f4671b3c4b2875e4c33387df83ee8ee7800bab51b0079d83c4c72` | 2025-07-03 | ✅ |
-| 2 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
+| 2 | Mayur Vanve | `GCUZ3SYNNTQK6YWD3HAC5CRYDYK6O34IBOYUYKQQP4ZDR7ZXVTOB4EHD` | `6b70797a764b531114997256b7409bc5956ec4adbd6f730444efdbde7fa9594d` | 2025-07-03 | ✅ |
 | 3 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
 | 4 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
 | 5 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
