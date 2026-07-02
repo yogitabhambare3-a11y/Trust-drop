@@ -87,20 +87,29 @@ export async function invokeClaim(params: {
 
 export function humanizeContractError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
-  if (msg.includes("AlreadyClaimed") || msg.includes("6")) {
+  if (msg.includes("AlreadyClaimed") || msg.includes("(6)") || msg.includes("code: 6")) {
     return "You have already claimed from this drop.";
   }
-  if (msg.includes("ClaimNotStarted") || msg.includes("7")) {
+  if (msg.includes("ClaimNotStarted") || msg.includes("(7)") || msg.includes("code: 7")) {
     return "This drop has not opened yet.";
   }
-  if (msg.includes("ClaimExpired") || msg.includes("8")) {
+  if (msg.includes("ClaimExpired") || msg.includes("(8)") || msg.includes("code: 8")) {
     return "The claim window for this drop has ended.";
   }
-  if (msg.includes("InvalidProof") || msg.includes("5")) {
-    return "You are not eligible for this drop.";
+  if (msg.includes("InvalidProof") || msg.includes("(5)") || msg.includes("code: 5")) {
+    return "Proof verification failed. The drop may not be funded on-chain yet, or the Merkle root doesn't match.";
   }
-  if (msg.includes("NotSignedIn") || msg.includes("User declined")) {
-    return "Please approve the transaction in Freighter.";
+  if (msg.includes("DropNotFound") || msg.includes("(4)") || msg.includes("code: 4")) {
+    return "Drop not found on-chain. The creator needs to call create_drop on the contract first.";
   }
-  return "Claim failed. Please try again or check your wallet balance.";
+  if (msg.includes("InsufficientContractBalance") || msg.includes("(9)") || msg.includes("code: 9")) {
+    return "The contract has no tokens. The creator needs to fund the contract first.";
+  }
+  if (msg.includes("NotSignedIn") || msg.includes("User declined") || msg.includes("rejected")) {
+    return "Transaction rejected. Please approve it in Freighter.";
+  }
+  if (msg.includes("Contract address not configured")) {
+    return "Contract address not set. Please enter the contract address when creating your drop.";
+  }
+  return `Claim failed: ${msg.slice(0, 120)}`;
 }

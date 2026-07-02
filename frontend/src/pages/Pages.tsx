@@ -22,6 +22,10 @@ export function CreatorPanel() {
   const [minTxCount, setMinTxCount] = useState("");
   const [minAgeDays, setMinAgeDays] = useState("");
   const [mode, setMode] = useState<"csv" | "rules">("csv");
+  const [contractDropId, setContractDropId] = useState("1");
+  const [contractAddress, setContractAddress] = useState(
+    import.meta.env.VITE_CONTRACT_ADDRESS ?? "CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P"
+  );
   const [creating, setCreating] = useState(false);
   const [dropId, setDropId] = useState<string | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
@@ -59,6 +63,8 @@ export function CreatorPanel() {
       fd.append("claimEnd", String(Math.floor(new Date(claimEnd).getTime() / 1000)));
       fd.append("adminWallet", publicKey);
       fd.append("eligibilityMode", mode);
+      fd.append("contractAddress", contractAddress);
+      fd.append("contractDropId", contractDropId);
       if (mode === "rules") {
         fd.append(
           "ruleConfig",
@@ -110,6 +116,10 @@ export function CreatorPanel() {
           <div className="grid gap-3 sm:grid-cols-2">
             <input className="input" type="datetime-local" value={claimStart} onChange={(e) => setClaimStart(e.target.value)} />
             <input className="input" type="datetime-local" value={claimEnd} onChange={(e) => setClaimEnd(e.target.value)} />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input className="input" placeholder="Contract address" value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} />
+            <input className="input" placeholder="Contract drop ID (e.g. 1)" value={contractDropId} onChange={(e) => setContractDropId(e.target.value)} />
           </div>
           <div className="flex gap-2">
             <button type="button" className={mode === "csv" ? "btn-primary" : "btn-secondary"} onClick={() => setMode("csv")}>
