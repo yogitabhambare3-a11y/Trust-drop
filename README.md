@@ -15,7 +15,7 @@
 | **Live Application** | https://frontend-phi-vert-10.vercel.app |
 | **Demo Video** | [Watch full walkthrough](#demo-video) |
 | **Pitch Deck** | [View PPT](#pitch-deck) |
-| **Contract (Testnet)** | `CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P` |
+| **Contract (Testnet)** | `CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY` |
 | **50+ Users Proof** | [`docs/proof-of-usage/users.md`](docs/proof-of-usage/users.md) |
 | **User Onboarding Data** | [`docs/proof-of-usage/trustdrop-user-onboarding.csv`](docs/proof-of-usage/trustdrop-user-onboarding.csv) |
 | **Google Form** | https://forms.gle/trustdrop-onboarding |
@@ -100,10 +100,11 @@ TrustDrop lets creators (DAOs, game studios, event organizers) run bot-resistant
 ### Contract (Testnet)
 | Item | Value |
 |------|-------|
-| **Address** | `CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P` |
-| **Explorer** | [stellar.expert/testnet](https://stellar.expert/explorer/testnet/contract/CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P) |
-| **Deploy TX** | [43ba341d…](https://stellar.expert/explorer/testnet/tx/43ba341d8d1a90e1ecf702447be6125b33f8239ace2d1d48437867ca2f9ae655) |
-| **Initialize TX** | [43984ffe…](https://stellar.expert/explorer/testnet/tx/43984ffe6dc9c932fa8b63bda16386bb6e6d759cc323daa28c55b4b7c488488f) |
+| **Address** | `CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY` |
+| **Admin** | `GDTFEGG6CM4OPTVM4MTKDMY3JFBYQS6AQRMM5DVN36AYAYJXELMZYA5B` |
+| **Explorer** | [stellar.expert/testnet](https://stellar.expert/explorer/testnet/contract/CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY) |
+| **Deploy TX** | [e714650a…](https://stellar.expert/explorer/testnet/tx/e714650acd4e79c1e073c48f271178215835179a5a1c20bbb2d4203000488eaf) |
+| **Initialize TX** | [df7af482…](https://stellar.expert/explorer/testnet/tx/df7af4828a5d48558240212c3bfc4c649b82d3a632d3eb932b4e74915a0b45fe) |
 
 ### Demo Video
 > 📹 **[Watch Demo Video](#)** — Full walkthrough of Creator Panel + Claimer flow (5 min)

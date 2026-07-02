@@ -12,7 +12,7 @@ import {
 
 const NETWORK_PASSPHRASE = Networks.TESTNET;
 const RPC_URL = import.meta.env.VITE_SOROBAN_RPC_URL ?? "https://soroban-testnet.stellar.org";
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS ?? "";
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS ?? "CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY";
 
 export function getServer() {
   return new rpc.Server(RPC_URL, { allowHttp: true });

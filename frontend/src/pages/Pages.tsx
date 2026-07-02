@@ -24,7 +24,7 @@ export function CreatorPanel() {
   const [mode, setMode] = useState<"csv" | "rules">("csv");
   const [contractDropId, setContractDropId] = useState("1");
   const [contractAddress, setContractAddress] = useState(
-    import.meta.env.VITE_CONTRACT_ADDRESS ?? "CBE6XHVRRWH7C33G42RXFRGCR34EDEZV7TYV6Z4UOMKBFS2G3MTN7F3P"
+    import.meta.env.VITE_CONTRACT_ADDRESS ?? "CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY"
   );
   const [creating, setCreating] = useState(false);
   const [dropId, setDropId] = useState<string | null>(null);

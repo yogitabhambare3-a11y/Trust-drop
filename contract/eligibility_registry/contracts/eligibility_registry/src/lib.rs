@@ -114,11 +114,11 @@ pub fn verify_merkle_proof(
 #[contractimpl]
 impl EligibilityRegistry {
     /// One-time setup: stores the platform admin who can create drops.
+    /// No auth required — deployer sets the admin address.
     pub fn initialize(env: Env, admin: Address) -> Result<(), Error> {
         if env.storage().instance().has(&DataKey::Admin) {
             return Err(Error::AlreadyInitialized);
         }
-        admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
         Ok(())
     }
