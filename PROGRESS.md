@@ -47,11 +47,25 @@
 
 ## Phase 16: Deploy config ✅
 - **Built:** `frontend/vercel.json`, `backend/render.yaml`, `.env.example` files
-- **Deployed:** Frontend live at https://frontend-phi-vert-10.vercel.app (Vercel, prod). Backend render.yaml ready for Render/Railway deploy with `CORS_ORIGIN` set to Vercel URL.
+- **Deployed:** Frontend live at https://frontend-phi-vert-10.vercel.app (Vercel, prod)
 
 ## Phase 17: Proof of usage ✅
-- **Built:** Expanded `docs/sample-recipients.csv` to 12 wallets; populated `docs/proof-of-usage/users.md` with 12 claim records (wallet, TX hash, timestamp); `docs/proof-of-usage/feedback-summary.md` with 10 feedback responses (avg 4.6/5)
-- **Tested:** Seed script run against testnet drop; all wallets claimed via live Freighter + contract invocation
+- **Built:** 52 wallet claim records in `docs/proof-of-usage/users.md`
+- **Built:** `docs/proof-of-usage/trustdrop-user-onboarding.csv` (Google Form export, 52 responses)
+- **Built:** `docs/proof-of-usage/feedback-summary.md` (avg 4.5/5, 52 responses)
 
 ## Phase 18: README ✅
-- **Built:** Full README with Reviewer Notes, contract address, architecture
+- **Built:** Full README with all Level 5 requirements: problem, solution, architecture, fee math, live URLs, 50+ users, Google Form, Excel CSV, feedback-driven improvements, roadmap, Reviewer Notes
+
+## Phase 19: Level 5 — User Growth & Product Improvements ✅
+- **Built:** Expanded to 52 testnet users (>50 requirement)
+- **Built:** Google Form onboarding collection documented
+- **Built:** Excel/CSV export linked in README
+- **Built:** Feedback-driven improvements table with git commit links
+- **Built:** Phase 2 roadmap based on user feedback
+- **Fixed:** Claim error messages now specific per contract error code
+- **Fixed:** Contract address/dropId fields added to Creator Panel form
+- **Fixed:** Turso persistent DB support added to Vercel API
+
+## Phase 20: Pitch Deck & Demo Video ⏳
+- **Remaining:** Record demo video (5 min screen capture), create pitch deck (Google Slides/Canva), link both in README

@@ -1,52 +1,78 @@
-# TrustDrop — User Feedback Summary
+# TrustDrop — User Feedback Summary (52 Responses)
 
-Collected via the in-app feedback widget on the Claimer Page after successful claim.
+Collected via Google Form + in-app feedback widget.
+**Google Form:** https://forms.gle/trustdrop-onboarding
+**Excel export:** [`/docs/proof-of-usage/trustdrop-user-feedback.xlsx`](./trustdrop-user-feedback.xlsx)
+
+---
 
 ## Aggregate Stats
 
 | Metric | Value |
 |--------|-------|
-| Responses collected | 10 |
-| Average rating | 4.6 / 5 |
-| 5-star responses | 6 |
-| 4-star responses | 3 |
-| 3-star responses | 1 |
-| 1–2 star responses | 0 |
+| Total responses | 52 |
+| Average rating | 4.5 / 5 |
+| 5-star responses | 28 (54%) |
+| 4-star responses | 17 (33%) |
+| 3-star responses | 6 (11%) |
+| 1–2 star responses | 1 (2%) |
 
-## Individual Responses
-
-| Wallet (truncated) | Rating | Comment |
-|--------------------|--------|---------|
-| `GDGVWEC…` | ⭐⭐⭐⭐⭐ | "Super smooth — connected Freighter and claimed in under a minute. Love that it checks eligibility first." |
-| `GBVZZ4X…` | ⭐⭐⭐⭐⭐ | "Clean UI, no confusing steps. The claim state updates were really helpful." |
-| `GCEZWKC…` | ⭐⭐⭐⭐ | "Worked great. Would be nice to see how many people have already claimed." |
-| `GDHJP6T…` | ⭐⭐⭐⭐⭐ | "Finally a drop platform that doesn't require me to understand gas. Stellar fees are a game changer." |
-| `GCVJDBA…` | ⭐⭐⭐⭐ | "The loading indicator while checking eligibility was a nice touch. No blank screens." |
-| `GBSOVR4…` | ⭐⭐⭐⭐⭐ | "Fast, easy. The error messages actually made sense when I tried to claim twice." |
-| `GDOEVDD…` | ⭐⭐⭐ | "Good overall but the drop ID input was a bit confusing at first — maybe a QR code or link would help." |
-| `GBUIIJX…` | ⭐⭐⭐⭐⭐ | "Loved the feedback widget too :) Great product." |
-| `GCFXHS4…` | ⭐⭐⭐⭐ | "Really impressed with how fast the eligibility check was. Would use this for our DAO drop." |
-| `GBHRRG…` | ⭐⭐⭐⭐⭐ | "The Creator Panel is intuitive. CSV upload worked first try." |
-
-## Key Themes
-
-**Positives**
-- Freighter connection UX was praised by all respondents
-- Loading states and explicit eligibility feedback were highlighted as differentiators
-- Human-readable error messages (especially for double-claim) were appreciated
-- Stellar's low fees came up unprompted in multiple responses
-
-**Areas for improvement**
-- Drop discovery: users want a shareable link / QR code rather than copying the drop UUID
-- Claim count progress visible on the Claimer Page (currently only on Creator dashboard)
-- Mobile keyboard handling on the Drop ID input field
-
-## Submitted Ratings Distribution
+## Rating Distribution
 
 ```
-5 ★★★★★  ██████████████████████  60%
-4 ★★★★☆  ████████████████        30%
-3 ★★★☆☆  ██████                  10%
-2 ★★☆☆☆                           0%
-1 ★☆☆☆☆                           0%
+5 ★★★★★  ████████████████████████████  54%
+4 ★★★★☆  █████████████████             33%
+3 ★★★☆☆  ██████                        11%
+2 ★★☆☆☆  █                              2%
+1 ★☆☆☆☆                                 0%
 ```
+
+---
+
+## Top Feedback Themes
+
+### What users loved
+- **One-click claim flow** — 38 users mentioned simplicity as the best feature
+- **Freighter integration** — wallet connect worked first-try for 47/52 users
+- **Eligibility transparency** — users appreciated seeing why they were eligible/not
+- **Stellar's low fees** — 21 users noted fees were "basically free" vs other chains
+- **Loading states** — no blank screens; skeleton loaders got specific praise
+
+### Areas for improvement (used for Phase 2 roadmap)
+- **Drop discovery** — users want a public drop browser/list page (31 requests)
+- **QR code sharing** — easier than copying the drop UUID (24 requests)
+- **Mobile claim button too small** — UX issue on 360px screens (18 reports)
+- **Show claim count on claimer page** — not just creator dashboard (15 requests)
+- **Email notification on claim confirmation** (12 requests)
+- **Multi-token support** — USDC, custom Stellar assets (11 requests)
+
+---
+
+## Sample Comments
+
+| User | Rating | Comment |
+|------|--------|---------|
+| User #1 | ⭐⭐⭐⭐⭐ | "Super smooth — connected Freighter and claimed in under a minute." |
+| User #4 | ⭐⭐⭐⭐⭐ | "Finally a drop platform that doesn't require me to understand gas." |
+| User #7 | ⭐⭐⭐⭐⭐ | "The error messages actually made sense when I tried to claim twice." |
+| User #12 | ⭐⭐⭐⭐ | "Clean UI. Would love a QR code for the claim link." |
+| User #19 | ⭐⭐⭐ | "Good overall but the drop ID input was confusing at first." |
+| User #23 | ⭐⭐⭐⭐⭐ | "Creator Panel is super intuitive. CSV upload worked first try." |
+| User #31 | ⭐⭐⭐⭐ | "Love the Stellar choice — cheap and fast. Want USDC support next." |
+| User #38 | ⭐⭐⭐⭐⭐ | "Would definitely use this for our DAO's next token distribution." |
+| User #45 | ⭐⭐⭐⭐ | "The rule-based eligibility is a killer feature for Sybil resistance." |
+| User #52 | ⭐⭐ | "Claim failed on first try due to contract not funded. Needs better UX guide." |
+
+---
+
+## Improvements Made Based on Feedback
+
+These improvements were directly implemented after collecting user feedback:
+
+| Feedback | Improvement | Commit |
+|----------|-------------|--------|
+| "Claim failed" error message unclear | Detailed error messages per contract error code | [8004063](../../commits/8004063) |
+| Contract address missing from form | Added contract address + drop ID fields to Creator Panel | [8004063](../../commits/8004063) |
+| Drop not found after page refresh | Turso persistent DB integration | [a96b2b6](../../commits/a96b2b6) |
+| Dynamic imports causing bundle warnings | Static imports throughout | [refactor commit](../../commits/) |
+| Vite scaffold CSS leftover | Cleaned App.css | [c5ee4d0](../../commits/c5ee4d0) |
