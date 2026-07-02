@@ -2,9 +2,7 @@ import {
   Address,
   Contract,
   Networks,
-  Asset,
   TransactionBuilder,
-  Operation,
   nativeToScVal,
   xdr,
   rpc,
@@ -203,13 +201,16 @@ export async function invokeCreateDrop(params: {
   return result.hash;
 }
 
-// ─── Fund contract with XLM ───────────────────────────────────────────────
+// ─── Fund contract with XLM via SAC transfer ─────────────────────────────
+// Soroban contracts can't receive XLM via classic Payment — must use the
+// native asset SAC (Stellar Asset Contract) transfer instead.
+// Native XLM SAC on testnet: CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 
 export async function fundContract(params: {
   sourcePublicKey: string;
   signTransaction: (xdr: string) => Promise<string>;
   contractAddress: string;
-  amountXlm: string;   // e.g. "100" for 100 XLM
+  amountXlm: string;
 }) {
   const server = getServer();
 
@@ -223,26 +224,33 @@ export async function fundContract(params: {
     );
   }
 
+  // Convert XLM to stroops (i128)
+  const stroops = BigInt(Math.round(parseFloat(params.amountXlm) * 10_000_000));
+
+  // Call transfer(from, to, amount) on the native XLM SAC
+  const xlmSac = new Contract("CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC");
+  const op = xlmSac.call(
+    "transfer",
+    Address.fromString(params.sourcePublicKey).toScVal(),
+    Address.fromString(params.contractAddress).toScVal(),
+    nativeToScVal(stroops, { type: "i128" }),
+  );
+
   const tx = new TransactionBuilder(account, {
-    fee: "100",
+    fee: "1000000",
     networkPassphrase: Networks.TESTNET,
   })
-    .addOperation(
-      Operation.payment({
-        destination: params.contractAddress,
-        asset: Asset.native(),
-        amount: params.amountXlm,
-      })
-    )
+    .addOperation(op)
     .setTimeout(180)
     .build();
 
-  const signedXdr = await params.signTransaction(tx.toXDR());
+  const prepared = await server.prepareTransaction(tx);
+  const signedXdr = await params.signTransaction(prepared.toXDR());
   const signed = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
 
   const result = await server.sendTransaction(signed);
   if (result.status === "ERROR") {
-    throw new Error("Payment transaction failed");
+    throw new Error("XLM transfer to contract failed");
   }
 
   let getTx = await server.getTransaction(result.hash);
@@ -254,7 +262,7 @@ export async function fundContract(params: {
   }
 
   if (getTx.status !== "SUCCESS") {
-    throw new Error("Funding transaction failed on-chain");
+    throw new Error("Contract funding transaction failed on-chain");
   }
 
   return result.hash;
