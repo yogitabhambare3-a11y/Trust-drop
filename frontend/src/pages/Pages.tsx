@@ -22,7 +22,7 @@ export function CreatorPanel() {
   const [minTxCount, setMinTxCount] = useState("");
   const [minAgeDays, setMinAgeDays] = useState("");
   const [mode, setMode] = useState<"csv" | "rules">("csv");
-  const [contractDropId, setContractDropId] = useState("1");
+  const [contractDropId, setContractDropId] = useState(String(Math.floor(Date.now() / 1000) % 1000000));
   const [contractAddress, setContractAddress] = useState(
     import.meta.env.VITE_CONTRACT_ADDRESS ?? "CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY"
   );
@@ -34,6 +34,7 @@ export function CreatorPanel() {
     "idle" | "registering" | "funding" | "done" | "error"
   >("idle");
   const [onchainTx, setOnchainTx] = useState<{ register?: string; fund?: string }>({});
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
   const [recipients, setRecipients] = useState<Array<{ wallet: string; amount: string; claimed: number }>>([]);
   const [loadingDrop, setLoadingDrop] = useState(false);
@@ -100,6 +101,7 @@ export function CreatorPanel() {
   const handleRegisterOnchain = async () => {
     if (!publicKey || !merkleRoot || !totalAmount) return;
     setOnchainStep("registering");
+    setErrorMsg(null);
     try {
       // Step 1 — call create_drop on the Soroban contract
       const registerTx = await invokeCreateDrop({
@@ -140,7 +142,21 @@ export function CreatorPanel() {
       if (dropId) loadDrop(dropId);
     } catch (e) {
       setOnchainStep("error");
-      const msg = e instanceof Error ? e.message : "On-chain registration failed";
+      const raw = e instanceof Error ? e.message : String(e);
+      // Parse the specific contract error code for a clear message
+      let msg = raw;
+      if (raw.includes("#3") || raw.includes("DropAlreadyExists")) {
+        msg = "Drop ID already used. Change the Contract Drop ID field to a different number (e.g. 3, 4, 5...).";
+      } else if (raw.includes("#2") || raw.includes("NotAuthorized")) {
+        msg = "Not authorized. Your wallet must be the contract admin (GDTFEGG6...).";
+      } else if (raw.includes("#1") || raw.includes("NotInitialized")) {
+        msg = "Contract not initialized. Contact support.";
+      } else if (raw.includes("Account") && raw.includes("not found")) {
+        msg = raw; // already human-readable from invokeCreateDrop
+      } else if (raw.includes("insufficient")) {
+        msg = "Insufficient XLM balance. Get testnet XLM at https://friendbot.stellar.org/?addr=GDTFEGG6CM4OPTVM4MTKDMY3JFBYQS6AQRMM5DVN36AYAYJXELMZYA5B";
+      }
+      setErrorMsg(msg);
       toast(msg, "error");
     }
   };
@@ -270,9 +286,10 @@ export function CreatorPanel() {
               </div>
 
               {onchainStep === "error" && (
-                <p className="text-xs text-red-400">
-                  ⚠️ Failed. Make sure your wallet is the contract admin and has enough XLM.
-                </p>
+                <div className="rounded-lg border border-red-800 bg-red-950/30 p-3 text-xs text-red-300">
+                  <p className="font-semibold mb-1">⚠️ Error:</p>
+                  <p>{errorMsg ?? "Registration failed. Check console for details."}</p>
+                </div>
               )}
 
               <button
