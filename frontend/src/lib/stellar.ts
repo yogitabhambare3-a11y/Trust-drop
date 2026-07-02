@@ -2,7 +2,9 @@ import {
   Address,
   Contract,
   Networks,
+  Asset,
   TransactionBuilder,
+  Operation,
   nativeToScVal,
   xdr,
   rpc,
@@ -122,4 +124,138 @@ export function humanizeContractError(err: unknown): string {
     return "Contract address not set. Please enter the contract address when creating your drop.";
   }
   return `Claim failed: ${msg.slice(0, 120)}`;
+}
+
+// ─── Create drop on-chain ─────────────────────────────────────────────────
+
+export async function invokeCreateDrop(params: {
+  sourcePublicKey: string;
+  signTransaction: (xdr: string) => Promise<string>;
+  contractAddress: string;
+  dropId: number;
+  merkleRoot: string;         // 64-char hex string
+  tokenAddress: string;       // SAC contract address
+  totalAmount: string;        // in stroops
+  claimStart: number;
+  claimEnd: number;
+}) {
+  const server = getServer();
+  const contract = getContract(params.contractAddress);
+
+  let account;
+  try {
+    account = await server.getAccount(params.sourcePublicKey);
+  } catch {
+    throw new Error(
+      `Account not found on Stellar Testnet. Fund it at: ` +
+      `https://friendbot.stellar.org/?addr=${params.sourcePublicKey}`
+    );
+  }
+
+  // Convert 64-char hex merkle root to 32-byte Uint8Array
+  const rootBytes = new Uint8Array(32);
+  for (let i = 0; i < 32; i++) {
+    rootBytes[i] = parseInt(params.merkleRoot.slice(i * 2, i * 2 + 2), 16);
+  }
+
+  const op = contract.call(
+    "create_drop",
+    nativeToScVal(BigInt(params.dropId), { type: "u64" }),
+    xdr.ScVal.scvBytes(rootBytes),
+    Address.fromString(params.tokenAddress).toScVal(),
+    nativeToScVal(BigInt(params.totalAmount), { type: "i128" }),
+    nativeToScVal(BigInt(params.claimStart), { type: "u64" }),
+    nativeToScVal(BigInt(params.claimEnd), { type: "u64" }),
+    Address.fromString(params.sourcePublicKey).toScVal(),
+  );
+
+  const tx = new TransactionBuilder(account, {
+    fee: "1000000",
+    networkPassphrase: Networks.TESTNET,
+  })
+    .addOperation(op)
+    .setTimeout(180)
+    .build();
+
+  const prepared = await server.prepareTransaction(tx);
+  const signedXdr = await params.signTransaction(prepared.toXDR());
+  const signed = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
+
+  const result = await server.sendTransaction(signed);
+  if (result.status === "ERROR") {
+    throw new Error(result.errorResult?.toXDR("base64") ?? "create_drop transaction failed");
+  }
+
+  // Poll for confirmation
+  let getTx = await server.getTransaction(result.hash);
+  let attempts = 0;
+  while (getTx.status === "NOT_FOUND" && attempts < 30) {
+    await new Promise((r) => setTimeout(r, 1000));
+    getTx = await server.getTransaction(result.hash);
+    attempts++;
+  }
+
+  if (getTx.status !== "SUCCESS") {
+    const err = (getTx as { resultXdr?: { toXDR?: (enc: string) => string } }).resultXdr?.toXDR?.("base64") ?? "create_drop failed on-chain";
+    throw new Error(err);
+  }
+
+  return result.hash;
+}
+
+// ─── Fund contract with XLM ───────────────────────────────────────────────
+
+export async function fundContract(params: {
+  sourcePublicKey: string;
+  signTransaction: (xdr: string) => Promise<string>;
+  contractAddress: string;
+  amountXlm: string;   // e.g. "100" for 100 XLM
+}) {
+  const server = getServer();
+
+  let account;
+  try {
+    account = await server.getAccount(params.sourcePublicKey);
+  } catch {
+    throw new Error(
+      `Account not found on Stellar Testnet. Fund it at: ` +
+      `https://friendbot.stellar.org/?addr=${params.sourcePublicKey}`
+    );
+  }
+
+  const tx = new TransactionBuilder(account, {
+    fee: "100",
+    networkPassphrase: Networks.TESTNET,
+  })
+    .addOperation(
+      Operation.payment({
+        destination: params.contractAddress,
+        asset: Asset.native(),
+        amount: params.amountXlm,
+      })
+    )
+    .setTimeout(180)
+    .build();
+
+  const signedXdr = await params.signTransaction(tx.toXDR());
+  const signed = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET);
+
+  const result = await server.sendTransaction(signed);
+  if (result.status === "ERROR") {
+    throw new Error("Payment transaction failed");
+  }
+
+  let getTx = await server.getTransaction(result.hash);
+  let attempts = 0;
+  while (getTx.status === "NOT_FOUND" && attempts < 30) {
+    await new Promise((r) => setTimeout(r, 1000));
+    getTx = await server.getTransaction(result.hash);
+    attempts++;
+  }
+
+  if (getTx.status !== "SUCCESS") {
+    throw new Error("Funding transaction failed on-chain");
+  }
+
+  return result.hash;
 }

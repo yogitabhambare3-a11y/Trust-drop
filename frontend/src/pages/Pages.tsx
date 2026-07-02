@@ -6,7 +6,7 @@ import { useWallet } from "../context/WalletContext";
 import { checkEligibility, createDrop, getDrop, getRecipients, recordClaim, type Drop } from "../lib/api";
 import { FeedbackWidget } from "../components/FeedbackWidget";
 import { useToast } from "../components/Toast";
-import { invokeClaim, humanizeContractError } from "../lib/stellar";
+import { invokeClaim, invokeCreateDrop, fundContract, humanizeContractError } from "../lib/stellar";
 import posthog from "posthog-js";
 
 type ClaimState = "idle" | "checking" | "submitting" | "pending" | "confirmed" | "failed";
@@ -28,6 +28,12 @@ export function CreatorPanel() {
   );
   const [creating, setCreating] = useState(false);
   const [dropId, setDropId] = useState<string | null>(null);
+  const [merkleRoot, setMerkleRoot] = useState<string | null>(null);
+  const [totalAmount, setTotalAmount] = useState<string | null>(null);
+  const [onchainStep, setOnchainStep] = useState<
+    "idle" | "registering" | "funding" | "done" | "error"
+  >("idle");
+  const [onchainTx, setOnchainTx] = useState<{ register?: string; fund?: string }>({});
   const [drop, setDrop] = useState<Drop | null>(null);
   const [recipients, setRecipients] = useState<Array<{ wallet: string; amount: string; claimed: number }>>([]);
   const [loadingDrop, setLoadingDrop] = useState(false);
@@ -79,12 +85,63 @@ export function CreatorPanel() {
 
       const result = await createDrop(fd);
       setDropId(result.dropId);
+      setMerkleRoot(result.merkleRoot);
+      setTotalAmount(result.totalAmount);
+      setOnchainStep("idle");
       posthog.capture("drop_created", { dropId: result.dropId, recipients: result.recipientCount });
-      toast(`Drop created with ${result.recipientCount} recipients`, "success");
+      toast(`Drop created! Now register it on-chain.`, "success");
     } catch (e) {
       toast(e instanceof Error ? e.message : "Create failed", "error");
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleRegisterOnchain = async () => {
+    if (!publicKey || !merkleRoot || !totalAmount) return;
+    setOnchainStep("registering");
+    try {
+      // Step 1 — call create_drop on the Soroban contract
+      const registerTx = await invokeCreateDrop({
+        sourcePublicKey: publicKey,
+        signTransaction: async (xdr) => {
+          const signed = await signTransaction(xdr, { networkPassphrase: Networks.TESTNET });
+          if (signed.error) throw new Error(String(signed.error));
+          return signed.signedTxXdr;
+        },
+        contractAddress,
+        dropId: Number(contractDropId),
+        merkleRoot,
+        tokenAddress: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        totalAmount,
+        claimStart: claimStart ? Math.floor(new Date(claimStart).getTime() / 1000) : 1000000,
+        claimEnd: claimEnd ? Math.floor(new Date(claimEnd).getTime() / 1000) : 9999999999,
+      });
+      setOnchainTx((t) => ({ ...t, register: registerTx }));
+      toast("✅ Drop registered on-chain! Now funding…", "success");
+
+      // Step 2 — send XLM to the contract
+      setOnchainStep("funding");
+      const xlmAmount = (Number(totalAmount) / 10_000_000).toFixed(7);
+      const fundTx = await fundContract({
+        sourcePublicKey: publicKey,
+        signTransaction: async (xdr) => {
+          const signed = await signTransaction(xdr, { networkPassphrase: Networks.TESTNET });
+          if (signed.error) throw new Error(String(signed.error));
+          return signed.signedTxXdr;
+        },
+        contractAddress,
+        amountXlm: xlmAmount,
+      });
+      setOnchainTx((t) => ({ ...t, fund: fundTx }));
+      setOnchainStep("done");
+      posthog.capture("drop_funded", { dropId, registerTx, fundTx });
+      toast("🎉 Drop is live! Share the claim link.", "success");
+      if (dropId) loadDrop(dropId);
+    } catch (e) {
+      setOnchainStep("error");
+      const msg = e instanceof Error ? e.message : "On-chain registration failed";
+      toast(msg, "error");
     }
   };
 
@@ -142,27 +199,97 @@ export function CreatorPanel() {
           </button>
         </div>
 
-        <div className="card">
-          <h2 className="font-semibold">Funding instructions</h2>
-          <p className="mt-2 text-sm text-slate-400">
-            After creating a drop, call <code className="text-brand-100">create_drop</code> on the Soroban contract with the
-            returned Merkle root, then transfer tokens to the contract address.
-          </p>
-          {drop && (
-            <dl className="mt-4 space-y-2 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">Drop ID</dt>
-                <dd className="truncate font-mono text-xs">{drop.id}</dd>
+        <div className="card space-y-4">
+          <h2 className="font-semibold">
+            {onchainStep === "done" ? "✅ Drop is live!" : "Register on-chain"}
+          </h2>
+
+          {!dropId ? (
+            <p className="text-sm text-slate-400">
+              Create a drop first, then register it on the Soroban contract and fund it — all in one click.
+            </p>
+          ) : onchainStep === "done" ? (
+            <div className="space-y-3 text-sm">
+              <p className="text-emerald-300 font-medium">Both transactions confirmed ✅</p>
+              {onchainTx.register && (
+                <div>
+                  <p className="text-slate-500 text-xs">Register TX</p>
+                  <a
+                    href={`https://stellar.expert/explorer/testnet/tx/${onchainTx.register}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-xs text-brand-400 hover:underline break-all"
+                  >
+                    {onchainTx.register.slice(0, 32)}…
+                  </a>
+                </div>
+              )}
+              {onchainTx.fund && (
+                <div>
+                  <p className="text-slate-500 text-xs">Fund TX</p>
+                  <a
+                    href={`https://stellar.expert/explorer/testnet/tx/${onchainTx.fund}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-xs text-brand-400 hover:underline break-all"
+                  >
+                    {onchainTx.fund.slice(0, 32)}…
+                  </a>
+                </div>
+              )}
+              <div className="rounded-lg bg-slate-800 p-3">
+                <p className="text-xs text-slate-400 mb-1">Claim link — share this:</p>
+                <p className="font-mono text-xs text-brand-300 break-all">
+                  {window.location.origin}/claim?drop={dropId}
+                </p>
               </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">Merkle root</dt>
-                <dd className="truncate font-mono text-xs">{drop.merkle_root.slice(0, 16)}…</dd>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {drop && (
+                <dl className="space-y-2 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-slate-500">Merkle root</dt>
+                    <dd className="font-mono text-xs text-slate-300">{drop.merkle_root.slice(0, 20)}…</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-slate-500">Total amount</dt>
+                    <dd className="text-slate-300">{drop.total_amount} stroops</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-slate-500">Recipients</dt>
+                    <dd className="text-slate-300">{drop.stats.totalRecipients}</dd>
+                  </div>
+                </dl>
+              )}
+
+              <div className="rounded-lg border border-amber-800 bg-amber-950/30 p-3 text-xs text-amber-300">
+                <p className="font-semibold mb-1">Two Freighter approvals needed:</p>
+                <p>1️⃣ Register drop on Soroban contract</p>
+                <p>2️⃣ Send XLM tokens to contract</p>
               </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">Total amount</dt>
-                <dd>{drop.total_amount}</dd>
-              </div>
-            </dl>
+
+              {onchainStep === "error" && (
+                <p className="text-xs text-red-400">
+                  ⚠️ Failed. Make sure your wallet is the contract admin and has enough XLM.
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="btn-primary w-full"
+                disabled={!publicKey || onchainStep === "registering" || onchainStep === "funding"}
+                onClick={handleRegisterOnchain}
+              >
+                {onchainStep === "registering"
+                  ? "⏳ Registering on-chain…"
+                  : onchainStep === "funding"
+                    ? "⏳ Funding contract…"
+                    : onchainStep === "error"
+                      ? "Retry register & fund"
+                      : "🚀 Register & Fund on-chain"}
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -218,7 +345,10 @@ export function CreatorPanel() {
                 </table>
               </div>
               <p className="mt-3 text-xs text-slate-500">
-                Claim link: {window.location.origin}/claim?drop={dropId}
+                Claim link:{" "}
+                <span className="text-brand-300 break-all">
+                  {window.location.origin}/claim?drop={dropId}
+                </span>
               </p>
             </>
           )}
