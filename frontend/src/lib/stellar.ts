@@ -4,6 +4,7 @@ import {
   Networks,
   TransactionBuilder,
   nativeToScVal,
+  xdr,
   rpc,
 } from "@stellar/stellar-sdk";
 
@@ -29,10 +30,9 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 function proofToScVal(proof: string[]) {
-  return nativeToScVal(
-    proof.map((hex) => hexToBytes(hex)),
-    { type: "bytes" }
-  );
+  // Each proof element is BytesN<32> — build Vec<BytesN<32>> for Soroban
+  const scVals = proof.map((hex) => xdr.ScVal.scvBytes(hexToBytes(hex)));
+  return xdr.ScVal.scvVec(scVals);
 }
 
 export async function invokeClaim(params: {
@@ -45,11 +45,21 @@ export async function invokeClaim(params: {
 }) {
   const server = getServer();
   const contract = getContract(params.contractAddress);
-  const account = await server.getAccount(params.sourcePublicKey);
+
+  // Verify account exists on testnet before proceeding
+  let account;
+  try {
+    account = await server.getAccount(params.sourcePublicKey);
+  } catch {
+    throw new Error(
+      `Account ${params.sourcePublicKey.slice(0, 8)}... not found on Stellar Testnet. ` +
+      `Fund it at https://friendbot.stellar.org/?addr=${params.sourcePublicKey}`
+    );
+  }
 
   const op = contract.call(
     "claim",
-    nativeToScVal(params.dropId, { type: "u64" }),
+    nativeToScVal(BigInt(params.dropId), { type: "u64" }),
     Address.fromString(params.sourcePublicKey).toScVal(),
     nativeToScVal(BigInt(params.amount), { type: "i128" }),
     proofToScVal(params.proof)
