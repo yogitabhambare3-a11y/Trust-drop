@@ -1,4 +1,4 @@
-# TrustDrop — Proof of Usage (50+ Testnet Users)
+# TrustDrop — Proof of Usage
 
 ## Live Testnet Drop Details
 
@@ -21,28 +21,12 @@
 
 ## Claim Records
 
-> ✅ = verified on Stellar Explorer
-> Each TX hash links directly to the on-chain claim transaction
-
 | # | Name | Wallet Address | TX Hash | Date | Verified |
 |---|------|----------------|---------|------|----------|
 | 1 | Yogita Bhambare | `GDTFEGG6CM4OPTVM4MTKDMY3JFBYQS6AQRMM5DVN36AYAYJXELMZYA5B` | `186332ad195f4671b3c4b2875e4c33387df83ee8ee7800bab51b0079d83c4c72` | 2025-07-03 | ✅ |
 | 2 | Mayur Vanve | `GCUZ3SYNNTQK6YWD3HAC5CRYDYK6O34IBOYUYKQQP4ZDR7ZXVTOB4EHD` | `6b70797a764b531114997256b7409bc5956ec4adbd6f730444efdbde7fa9594d` | 2025-07-03 | ✅ |
 | 3 | Sneha Bhambare | `GDG4K3RXV5RGEIJ4FKK3GU3CPVQLZZVZOCKREXEKSWTP4LQTAKQDSPFM` | `f0b7a7c9e33e29bc4fb42b58548517136eee19e361e5d8856894e24a352cf78f` | 2025-07-03 | ✅ |
 | 4 | Sushant Patil | `GBKYFDY IGFJ7T4CRGDNDF2RGEY6MR4EG2F5GSWYX6LFZ5G43ADGXKQK4` | `4c59d9daa7d02fc7733387dcc1177f37f2712480056a2cd74493013a1b1e6340` | 2025-07-03 | ✅ |
-| 4 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
-| 5 | _(pending)_ | _(wallet)_ | _(tx hash)_ | _(date)_ | ⏳ |
-
-> _Add rows as users claim and submit the Google Form_
-
----
-
-## Screenshots
-
-- `docs/screenshots/desktop-creator.png` — Creator Panel
-- `docs/screenshots/mobile-claim.png` — Claimer Page on mobile
-- `docs/screenshots/claim-confirmed.png` — Successful claim with TX hash
-- `docs/screenshots/analytics.png` — Analytics dashboard
 
 ---
 
