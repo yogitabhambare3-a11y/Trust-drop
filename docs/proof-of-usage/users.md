@@ -28,6 +28,7 @@
 | 3 | Sneha Bhambare | `GDG4K3RXV5RGEIJ4FKK3GU3CPVQLZZVZOCKREXEKSWTP4LQTAKQDSPFM` | `f0b7a7c9e33e29bc4fb42b58548517136eee19e361e5d8856894e24a352cf78f` | 2025-07-03 | ✅ |
 | 4 | Sushant Patil | `GBKYFDY IGFJ7T4CRGDNDF2RGEY6MR4EG2F5GSWYX6LFZ5G43ADGXKQK4` | `4c59d9daa7d02fc7733387dcc1177f37f2712480056a2cd74493013a1b1e6340` | 2025-07-03 | ✅ |
 | 5 | Prathamesh Hosamani | `GB5OQ76LTX5IBZESSXFMZKGDVPUUPUJGC7LKPRCRPAUI2WC3CMCMR7M7` | `d8efe64d366a4fe64884041ad36162c4db61ec3f5ded11b0372d79651b0a5324` | 2025-07-03 | ✅ |
+| 6 | Jenny Jeswani | `GBBMOZAQLLNUYFSHX5YUWYAE34QJQTHCU3S3QRJJVQSFQYLN4OH2I33J` | `214466f705baedc01e084580e80e38ea1dcbf03513f299973ec18018cb4e6d2e` | 2025-07-03 | ✅ |
 
 ---
 
@@ -35,5 +36,5 @@
 
 - All wallets funded via [Stellar Friendbot](https://friendbot.stellar.org)
 - Claims verified on [Stellar Expert Testnet Explorer](https://stellar.expert/explorer/testnet)
-- User feedback collected via [Google Form](https://forms.gle/yyy23PVF9f2ywRn29)
+- User feedback collected via [Google Form](https://forms.gle/yyy23PVF9f2ywRn29)j
 - Excel export: [`trustdrop-user-onboarding.csv`](./trustdrop-user-onboarding.csv)
