@@ -38,5 +38,5 @@
 
 - All wallets funded via [Stellar Friendbot](https://friendbot.stellar.org)
 - Claims verified on [Stellar Expert Testnet Explorer](https://stellar.expert/explorer/testnet)
-- User feedback collected via [Google Form](https://forms.gle/yyy23PVF9f2ywRn29)j
+- User feedback collected via [Google Form](https://forms.gle/yyy23PVF9f2ywRn29)
 - Excel export: [`trustdrop-user-onboarding.csv`](./trustdrop-user-onboarding.csv)
