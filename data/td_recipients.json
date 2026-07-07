@@ -1,1 +1,1 @@
-[{"id":1,"drop_id":"964f8726-2b28-4e34-9e66-e63c1a83362f","wallet":"GBT32FM7PQJE5DOYWY6KCU4AU73OB2VARTPECUQK3PKORTGCOOERATFD","amount":"1000000000","claimed":0,"claim_tx_hash":null,"claimed_at":null}]
+[{"id":1,"drop_id":"964f8726-2b28-4e34-9e66-e63c1a83362f","wallet":"GBT32FM7PQJE5DOYWY6KCU4AU73OB2VARTPECUQK3PKORTGCOOERATFD","amount":"1000000000","claimed":1,"claim_tx_hash":"5963c92b5352f5a357955749539ce1e1e8b2accd08247c11897882add819180e","claimed_at":1783430479}]
