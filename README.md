@@ -14,9 +14,8 @@
 |----------|------|
 | **Live Application** | https://frontend-phi-vert-10.vercel.app |
 | **Demo Video** | [Watch full walkthrough](https://www.loom.com/share/dab1ec416d934257bacdff0143a70111) |
-| **Pitch Deck** | [View PPT](#pitch-deck) |
 | **Contract (Testnet)** | `CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY` |
-| **50+ Users Proof** | [`docs/proof-of-usage/users.md`](docs/proof-of-usage/users.md) |
+| **Users Proof** | [`docs/proof-of-usage/users.md`](docs/proof-of-usage/users.md) |
 | **User Onboarding Data** | [`docs/proof-of-usage/trustdrop-user-onboarding.csv`](docs/proof-of-usage/trustdrop-user-onboarding.csv) |
 | **Google Form** | https://forms.gle/yyy23PVF9f2ywRn29 |
 | **Feedback Summary** | [`docs/proof-of-usage/feedback-summary.md`](docs/proof-of-usage/feedback-summary.md) |
@@ -108,11 +107,6 @@ TrustDrop lets creators (DAOs, game studios, event organizers) run bot-resistant
 
 ### Demo Video
 > 📹 **[Watch Demo Video](https://www.loom.com/share/dab1ec416d934257bacdff0143a70111)** — Full walkthrough of Creator Panel + Claimer flow
-
-### Pitch Deck
-> 📊 **[View Pitch Deck](#)** — Problem, Solution, Market, Architecture, Roadmap
->
-> _Create using Google Slides / Canva and link here_
 
 ---
 
