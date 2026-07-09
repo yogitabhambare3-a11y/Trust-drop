@@ -192,8 +192,12 @@ impl EligibilityRegistry {
         }
 
         let leaf = compute_leaf_hash(&env, &claimer, amount);
-        if !verify_merkle_proof(&env, &merkle_proof, &drop.merkle_root, &leaf) {
-            return Err(Error::InvalidProof);
+        // If merkle_root is all zeros, this is an open drop — skip proof verification
+        let zero_root = BytesN::from_array(&env, &[0u8; 32]);
+        if drop.merkle_root != zero_root {
+            if !verify_merkle_proof(&env, &merkle_proof, &drop.merkle_root, &leaf) {
+                return Err(Error::InvalidProof);
+            }
         }
 
         if drop.distributed_amount + amount > drop.total_amount {

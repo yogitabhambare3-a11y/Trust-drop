@@ -1,53 +1,12 @@
-Timestamp,Name,Email,Wallet Address,Rating (1-5),Feedback Comment
-2025-06-03 09:14,Arjun Sharma,arjun.s@example.com,GDGVWECPXZIY4YVTO62CXJZNNYVQD6ZEZAA7Q3SPITIIDMHIPH65T6CL,5,Super smooth — connected Freighter and claimed in under a minute. Love that it checks eligibility first.
-2025-06-03 09:31,Priya Nair,priya.n@example.com,GBVZZ4XLXHCWPDXFQ46JYFNMWYDULKB3DLTEJPNQMBDQEZZ3YGPJKOL,5,Clean UI no confusing steps. The claim state updates were really helpful.
-2025-06-03 10:02,Rahul Verma,rahul.v@example.com,GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGKL5VBHUL6Q3JKDF63GQK,4,Worked great. Would be nice to see how many people have already claimed.
-2025-06-03 10:18,Sneha Patel,sneha.p@example.com,GDHJP6TF3UXYXTNEZ2P36J5FH7W4BJJQ4AYYAXC66I2ROZOJWIYQQLN,5,Finally a drop platform that doesn't require me to understand gas. Stellar fees are a game changer.
-2025-06-04 08:44,Vikram Singh,vikram.s@example.com,GCVJDBALC2RQFLD2HYGQGWNFZBCOD2CPOTN3LE7FWRZ44SZD6SGOU2KH,4,The loading indicator while checking eligibility was a nice touch. No blank screens.
-2025-06-04 09:07,Ananya Krishnan,ananya.k@example.com,GBSOVR4HQHRVFPNZUVHBPUDHBFHLZV6MY4GRUMHBRRMQ37QKXPIJX25Y,5,Fast easy. The error messages actually made sense when I tried to claim twice.
-2025-06-04 11:22,Dev Mehta,dev.m@example.com,GDOEVDDBU6OBWKL7VHDAOKD77UP4DQYLEEKXP2OIECFGCE7ZEXXUIFMD,3,Good overall but the drop ID input was a bit confusing at first. Maybe a QR code would help.
-2025-06-04 13:55,Kavya Reddy,kavya.r@example.com,GBUIIJXQ6MTOBUZXF5AVQVMVUV5BIUUBBMITLQPHVVUUAMCZFCJGLYHE,5,Loved the feedback widget too :) Great product.
-2025-06-05 07:30,Rohan Gupta,rohan.g@example.com,GCFXHS4GXL6BVUCXBWXGTITROWLVYXQKQLNKU3DKFUQNBFZDZCHQKBOE,4,Really impressed with how fast the eligibility check was. Would use this for our DAO drop.
-2025-06-05 08:12,Meera Iyer,meera.i@example.com,GBHRRGKFWMH5DPINMTBEZFPJ5HNZQPRG3NKJZEQHC5XJMRSBZQRSKDG,5,The Creator Panel is intuitive. CSV upload worked first try.
-2025-06-05 09:48,Aakash Joshi,aakash.j@example.com,GDMTVHLWJTHSCSN77KDZOTZQPKZPWSZNHKDQBQ6MMFHKP2GKNQ4EQVMV,4,Rule-based eligibility is a killer feature for Sybil resistance. Very impressed.
-2025-06-05 14:23,Pooja Sharma,pooja.s@example.com,GCAIBIFNJOQLECRHLHKGDJGQCGWQSTJYMQMGQ4WKJFGKB3NOPQSQYRXF,5,Really useful for token distributions. Will recommend to my blockchain community.
-2025-06-06 08:15,Nikhil Kumar,nikhil.k@example.com,GDZAPF6HCHQRPYISWBRQZQLPK4BVKJ7DKTM7ZGI3PYVKHJN2ZQTXOPQ,4,Drop creation was seamless. Want to see multi-token support in the future.
-2025-06-06 09:30,Sakshi Bhat,sakshi.b@example.com,GBNKQKX7VLVHAVXZRSNFMHJIHU6QXKJ5XHFCG2TJHFKWMQR3UYQJHCM,5,The Merkle proof concept is brilliant. Makes airdrops trustless for real.
-2025-06-06 10:45,Tanvir Ahmed,tanvir.a@example.com,GCRHMBFZQJXHQNPHYEKJLKMDTPLWGBZLPNPKKHWBZOBFRZXQQ3TYMOBN,4,Fast claim transaction on Stellar testnet. Very low fees as promised.
-2025-06-07 08:00,Divya Nair,divya.n@example.com,GDWF3TJLHQNBZMZWBPXWJRIYXQCQLEZUQDYUQMKJYBZW5RFQKW3KQTRP,5,Excellent UX for a blockchain product. Non-technical users can use this easily.
-2025-06-07 09:15,Kiran Raj,kiran.r@example.com,GBFM4KZJVMHQWPTYNZG3JXQDYMVBQRZTVBLPCGK3YHYRQTQFNFJ3BVCY,4,Would love QR code sharing for the claim link instead of copying UUID.
-2025-06-07 10:30,Shreya Menon,shreya.m@example.com,GCXLQYKZFNHPQWTMVZ3JBZDMKP4HQKYLNPRTCFGB2YQVTMHKQ3LXUPJ,5,The on-chain verification gives real confidence. Love the approach.
-2025-06-08 08:20,Yusuf Khan,yusuf.k@example.com,GAXTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGM,4,Good product. Mobile view could be improved slightly for small screens.
-2025-06-08 09:45,Ishaan Malhotra,ishaan.m@example.com,GDRZPYKNJHVMWQBLCTRXZFGQKTYVHXQWJPRFBLNTQBWCHKNJHPXMRVHWP,5,This is exactly what DAOs need for fair token distribution. Amazing work.
-2025-06-09 08:30,Nandita Roy,nandita.r@example.com,GBZXQNLFKRTPWHVYCMJZQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVM,3,UI is clean but onboarding could be clearer about the contract funding step.
-2025-06-09 09:00,Siddharth Rao,siddharth.r@example.com,GCNFQHKBXWPRTJYLZMQVTXFGBPNKQHWRYZXBLMJPTCVQHBNKXPZRTFWM,5,Freighter integration is seamless. Best airdrop tool on Stellar by far.
-2025-06-09 10:15,Aarti Desai,aarti.d@example.com,GDPXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBC,4,Analytics dashboard is a nice touch. Shows claim progress clearly.
-2025-06-10 08:45,Farhan Sheikh,farhan.s@example.com,GBXTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMN,5,Very impressed with the technical architecture. Merkle proofs are elegant.
-2025-06-10 09:30,Lavanya Pillai,lavanya.p@example.com,GCPXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCD,4,Would like to see a public list of active drops to discover opportunities.
-2025-06-11 08:00,Rishabh Jain,rishabh.j@example.com,GDXTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMO,5,Rule-based drops are perfect for community reward programs. Will use for our project.
-2025-06-11 09:15,Trisha Bose,trisha.b@example.com,GBQXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCE,4,Clean design. The eligibility check feedback is instant and clear.
-2025-06-11 10:30,Aman Mishra,aman.m@example.com,GCXTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMP,5,This solves a real problem. Looking forward to the mainnet launch.
-2025-06-12 08:15,Deepika Venkat,deepika.v@example.com,GDQXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCF,4,Good product overall. Email notification on claim would be great.
-2025-06-12 09:00,Kunal Bajaj,kunal.b@example.com,GBXTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMQ,5,The time-locked windows feature is very useful for scheduled distributions.
-2025-06-12 10:45,Simran Kaur,simran.k@example.com,GCQXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCG,3,Had to retry claim once. Overall works well though.
-2025-06-13 08:30,Rohit Pandey,rohit.p@example.com,GDYTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMR,5,Impressed by the one-claim enforcement. No double dipping possible.
-2025-06-13 09:15,Vasudha Krishnaswamy,vasudha.k@example.com,GBRXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCH,4,Would like USDC support. XLM is good but USDC would open more use cases.
-2025-06-13 10:00,Hemant Soni,hemant.s@example.com,GCZTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMS,5,Perfect for game studios to reward players. Will pitch this to my team.
-2025-06-14 08:20,Anisha Ghosh,anisha.g@example.com,GDSXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCI,4,Show claim count on claimer page too not just creator dashboard.
-2025-06-14 09:30,Manish Tiwari,manish.t@example.com,GBZTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMT,5,The architecture is solid. Soroban + Merkle tree is a great combination.
-2025-06-14 10:15,Ritika Dhar,ritika.d@example.com,GCVXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCJ,4,Nice UX. The toast notifications are helpful for tracking status.
-2025-06-15 08:00,Ayaan Mirza,ayaan.m@example.com,GDATNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMU,5,Used it for our hackathon prize distribution. Worked perfectly.
-2025-06-15 09:15,Swati Kulkarni,swati.k@example.com,GBWXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCK,4,Very professional product for a hackathon project. Great work!
-2025-06-15 10:30,Pranav Rao,pranav.r@example.com,GCBTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMV,3,Needs a public drop discovery page. Hard to find drops right now.
-2025-06-16 08:45,Madhuri Patil,madhuri.p@example.com,GDXXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCL,5,Sybil resistance through Merkle proofs is genius. Real innovation here.
-2025-06-16 09:30,Suresh Nambiar,suresh.n@example.com,GBCTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMW,4,Fast transactions as promised. Stellar really is underrated for DeFi.
-2025-06-16 10:15,Komal Agarwal,komal.a@example.com,GCYXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCM,5,Would love to see multi-drop management dashboard in future versions.
-2025-06-17 08:00,Vinay Gopalan,vinay.g@example.com,GDDTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMX,4,Smooth experience. The wallet state management is well done.
-2025-06-17 09:15,Smita Jha,smita.j@example.com,GBZXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCN,5,TrustDrop is what airdrops should have been all along. Brilliant.
-2025-06-17 10:30,Abhijit Sarkar,abhijit.s@example.com,GCETNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMY,4,Clean code architecture shown in the README. Trust the technical depth.
-2025-06-18 08:20,Radha Subramaniam,radha.s@example.com,GDAXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCO,5,This would work great for NFT community airdrops. Excited for mainnet.
-2025-06-18 09:00,Chetan Verma,chetan.v@example.com,GBFTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGMZ,3,Works but needs better documentation for non-technical creators.
-2025-06-18 10:15,Pallavi Mathur,pallavi.m@example.com,GCBXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCP,4,The fee calculation in README is a great selling point. Very transparent.
-2025-06-19 08:30,Sanjay Rathi,sanjay.r@example.com,GDGTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGNA,5,My team of 10 all claimed successfully in one session. No issues at all.
-2025-06-19 09:15,Nisha Kapoor,nisha.k@example.com,GBDXWQFNKBHTRVYMZJQXBLGFNKBTHPXQ4WJMHRCYZQBTVKPXQJNHVMBCQ,4,Show total XLM distributed on creator dashboard for better tracking.
-2025-06-19 10:00,Prateek Malviya,prateek.m@example.com,GCHTNRBLQPTJCVPNHBFXQZLHKJMYWRQVCTJPUXQ4ZBWHNKPXZHTUBFGNB,2,Claim failed on first try due to contract not funded. Needs a better UX guide for this step.
+Timestamp,Name,Email,Stellar Wallet Address,Hash tx ( transaction ID),Rate TrustDrop (1-5 stars),Comments
+7/3/2026 1:28,Mayur Vanve ,mayurdv15@gmail.com,GCUZ3SYNNTQK6YWD3HAC5CRYDYK6O34IBOYUYKQQP4ZDR7ZXVTOB4EHD,6b70797a764b531114997256b7409bc5956ec4adbd6f730444efdbde7fa9594d,4,nice
+7/3/2026 1:50,Sneha Bhambare,sneha.bhambare55@gmail.com,GDG4K3RXV5RGEIJ4FKK3GU3CPVQLZZVZOCKREXEKSWTP4LQTAKQDSPFM,f0b7a7c9e33e29bc4fb42b58548517136eee19e361e5d8856894e24a352cf78f,5,benefical 
+7/3/2026 17:58,Sushant Patil,sushantpatildata.0404@gmail.com,GBKYFDYIGFJ7T4CRGDNDF2RGEY6MR4EG2F5GSWYX6LFZ5G43ADGXKQK4,4c59d9daa7d02fc7733387dcc1177f37f2712480056a2cd74493013a1b1e6340,4,amzing..
+7/6/2026 17:37,jenny jeswani,jennyjeswani28@gmail.com,GBBMOZAQLLNUYFSHX5YUWYAE34QJQTHCU3S3QRJJVQSFQYLN4OH2I33J,214466f705baedc01e084580e80e38ea1dcbf03513f299973ec18018cb4e6d2e,5,awesome idea
+7/6/2026 19:57,Swanand Zanpure,swanandzanpure7@gmail.com,GCRGJPO6BMMEH57WDMUIPO6R73UTT3K7QTXZYWKMYW7HBF5TKUFFPX7W,0c18f69e933d0d4c0fb9e6b40aff6348beaba52d6871403f1da8b02b58f67ede,5,very good
+7/6/2026 19:58,Aarav Kodgule,kodguleaarav57@gmail.com,GAYVDS4IHMWV4IAW4DDP4F4MPB25AHOSOQ7JOMYTVNJBFJGIGBC7X7GZ,985bf69fe002ecc1052d32637489c9cb7a5049da44db9269f19c5682fef01fdd,4,really helpful
+7/7/2026 16:53,Atharva kedari,atharvakedari25@gmail.com,GC7MFZ7626TBBHDQMF46Q2WRFDDAWEEGAF4O4Y2HKNB7W7QRZK7CGHLL,f28c7573ee48c02080d52c21adfe4634947fd9921b6cc26165e318d6b012b877,5,very smooth
+7/7/2026 17:55,om ozarkar,omozarkar00@gmail.com,GBT32FM7PQJE5DOYWY6KCU4AU73OB2VARTPECUQK3PKORTGCOOERATFD,5963c92b5352f5a357955749539ce1e1e8b2accd08247c11897882add819180e,4,very good
+7/8/2026 17:13,Sarthak Jamadar,sarthakjamadar09@gmail.com,GAQ7K55URIVLLWGPWEVU5BELPJ2FWXSMB3XWM6X7QBLVYVRGGYYC3EEJ,d21bb9f48e9bd2f28e8197b62e86172a0d3d50d7c0df6b63805f5acf337fa944,5,great website.
+7/9/2026 15:51,Mihir Shirolkar,shirolkarmihir@gmail.com,GBGTWTMNFXKPOYP2CZVQFOOG5X75OINOWWN567IKPGO2PL36UJHKHSRK,54433c3e92a521b6c9e19f19c0e5e303341cf72c2007c325352a7eddf8ba09d0,5,good ui
+,,,,,,

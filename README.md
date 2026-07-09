@@ -13,12 +13,12 @@
 | Resource | Link |
 |----------|------|
 | **Live Application** | https://frontend-phi-vert-10.vercel.app |
-| **Demo Video** | [Watch full walkthrough](#demo-video) |
+| **Demo Video** | [Watch full walkthrough](https://www.loom.com/share/dab1ec416d934257bacdff0143a70111) |
 | **Pitch Deck** | [View PPT](#pitch-deck) |
 | **Contract (Testnet)** | `CAI7Y43Q5N54GOJWFC2PUE5TW7NGNI7REZVSSGFF2XW5WWJWLRQAY2PY` |
 | **50+ Users Proof** | [`docs/proof-of-usage/users.md`](docs/proof-of-usage/users.md) |
 | **User Onboarding Data** | [`docs/proof-of-usage/trustdrop-user-onboarding.csv`](docs/proof-of-usage/trustdrop-user-onboarding.csv) |
-| **Google Form** | https://forms.gle/trustdrop-onboarding |
+| **Google Form** | https://forms.gle/yyy23PVF9f2ywRn29 |
 | **Feedback Summary** | [`docs/proof-of-usage/feedback-summary.md`](docs/proof-of-usage/feedback-summary.md) |
 
 ---
@@ -107,9 +107,7 @@ TrustDrop lets creators (DAOs, game studios, event organizers) run bot-resistant
 | **Initialize TX** | [df7af482…](https://stellar.expert/explorer/testnet/tx/df7af4828a5d48558240212c3bfc4c649b82d3a632d3eb932b4e74915a0b45fe) |
 
 ### Demo Video
-> 📹 **[Watch Demo Video](#)** — Full walkthrough of Creator Panel + Claimer flow (5 min)
->
-> _Record a screen capture showing: connect wallet → create drop → upload CSV → copy claim link → open claim link → check eligibility → claim → see TX hash_
+> 📹 **[Watch Demo Video](https://www.loom.com/share/dab1ec416d934257bacdff0143a70111)** — Full walkthrough of Creator Panel + Claimer flow
 
 ### Pitch Deck
 > 📊 **[View Pitch Deck](#)** — Problem, Solution, Market, Architecture, Roadmap
@@ -120,16 +118,16 @@ TrustDrop lets creators (DAOs, game studios, event organizers) run bot-resistant
 
 ## 👥 User Onboarding & Proof of Usage
 
-### 52 Testnet Users Onboarded
+### 14 Testnet Users Onboarded
 
 Full claim records: [`docs/proof-of-usage/users.md`](docs/proof-of-usage/users.md)
 
 | Metric | Value |
 |--------|-------|
-| Total users | **52** |
-| Successful claims | **52** |
+| Total users | **14** |
+| Successful claims | **14** |
 | Claim rate | **100%** |
-| Period | June 3 – June 20, 2025 |
+| Period | July 3 – July 7, 2025 |
 
 ### Google Form Onboarding
 
@@ -282,7 +280,21 @@ echo "your-token" | vercel env add TURSO_AUTH_TOKEN production
 
 ---
 
-## 📊 Monitoring & Analytics
+## 📸 Screenshots
+
+### Desktop UI
+![Creator Panel](docs/screenshots/creator%20panel.PNG)
+
+### UI
+![Product UI](docs/screenshots/ui.PNG)
+
+### Mobile Responsive Design
+![Mobile UI](docs/screenshots/mobile%20ui.PNG)
+
+### Analytics / Monitoring (API Health)
+![API Health](docs/screenshots/api-health.PNG)
+
+---
 
 - **PostHog** — frontend events: wallet_connected, drop_created, eligibility_checked, claim_attempt, claim_success, claim_failed
 - **Sentry** — error tracking on frontend + backend (env-gated)
